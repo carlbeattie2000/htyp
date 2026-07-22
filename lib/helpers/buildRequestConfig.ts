@@ -1,5 +1,4 @@
 import mergeConfigs from "./mergeConfig";
-import resolveConfig from "./resolveConfig";
 import HtypConfig from "../core/config";
 import { transformRequestData } from "../core/transforms";
 
@@ -34,5 +33,5 @@ export default function buildRequestConfig<D = any, P extends object = object>(
 
   mergedConfig._data = transformRequestData(mergedConfig);
 
-  return resolveConfig(mergedConfig);
+  return mergedConfig;
 }

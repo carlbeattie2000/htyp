@@ -3,6 +3,7 @@ import dispatchRequest from "./dispatchRequest";
 import { requestShouldRetry } from "./retries";
 import { transformResponseData } from "./transforms";
 import buildRequestConfig from "../helpers/buildRequestConfig";
+import resolveConfig from "../helpers/resolveConfig";
 
 import type { HtypResponse } from "../types";
 import type { AcceptedResponseTransformerTypes } from "./config/config.type";
@@ -29,25 +30,26 @@ export default class Htyp implements HtypI {
     config?: HtypRequestConfig<D, P>,
   ): Promise<HtypResponse<T, D, object, P>> {
     const requestConfig = buildRequestConfig(this.defaults, input, config);
+    const resolvedConfig = resolveConfig(requestConfig);
 
-    const response = await dispatchRequest(requestConfig);
+    const response = await dispatchRequest(resolvedConfig);
 
-    if (requestShouldRetry(requestConfig, response)) {
-      requestConfig._retry = true;
+    if (requestShouldRetry(resolvedConfig, response)) {
+      resolvedConfig._retry = true;
 
-      const updatedDelayPolicy = await requestConfig.retryPolicy.delay(
+      const updatedDelayPolicy = await resolvedConfig.retryPolicy.delay(
         response.status,
         response.headers,
-        requestConfig.retryPolicy._algorithm,
+        resolvedConfig.retryPolicy._algorithm,
       );
 
       if (updatedDelayPolicy) {
-        requestConfig.retryPolicy._algorithm = updatedDelayPolicy;
+        resolvedConfig.retryPolicy._algorithm = updatedDelayPolicy;
       }
 
-      requestConfig._retryCount += 1;
+      resolvedConfig._retryCount += 1;
 
-      return this.request(requestConfig);
+      return this.request(resolvedConfig);
     }
 
     return {
@@ -59,7 +61,7 @@ export default class Htyp implements HtypI {
         HtypConfig,
         [AcceptedResponseTransformerTypes],
         T | null
-      >(requestConfig, response.data),
+      >(resolvedConfig, response.data),
     };
   }
 }

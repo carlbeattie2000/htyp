@@ -80,7 +80,9 @@ export default class HtypConfig<
         silentJSONParsing: false,
         forcedJSONParsing: false,
       },
-      headers: new HtypHeaders(),
+      headers: new HtypHeaders({
+        "content-type": "application/json",
+      }),
       responseType: "json",
       timeout: 15_000,
       retry: false,

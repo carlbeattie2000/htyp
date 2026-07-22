@@ -1,3 +1,4 @@
+import type HtypConfig from ".";
 import type HtypHeaders from "../headers";
 
 export type TransformRequestFn<T> = (data: T, headers: HtypHeaders) => T;
@@ -15,6 +16,9 @@ export type RequestTransforms<T> = [
   TransformRequestFinalFn<T>,
 ];
 
+export type JsonValue =
+  string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
+
 export type AcceptedResponseTransformerTypes =
   | ReadableStream<Uint8Array<ArrayBuffer>>
   | ArrayBuffer
@@ -22,9 +26,10 @@ export type AcceptedResponseTransformerTypes =
   | Uint8Array
   | string
   | FormData
-  | object
+  | JsonValue
   | null;
 
 export type TransformResponseFn = (
+  this: HtypConfig,
   data: AcceptedResponseTransformerTypes,
 ) => AcceptedResponseTransformerTypes;

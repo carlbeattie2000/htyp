@@ -133,17 +133,17 @@ describe("requests", () => {
   });
 
   it("should make cross domain http request", async () => {
-    const response = await htyp.request("www.someurl.com/foo", {
-      method: "post",
-    });
-
     MockFetch.respondWith({
       status: 200,
       statusText: "OK",
-      responseText: '{"foo": "bar"}',
+      body: '{"foo": "bar"}',
       headers: {
         "Content-Type": "application/json",
       },
+    });
+
+    const response = await htyp.request("www.someurl.com/foo", {
+      method: "post",
     });
 
     expect(response.data.foo).toBe("bar");

@@ -13,6 +13,11 @@ import type {
 import type { RawHtypHeaders } from "./htypHeaders";
 import type { RetryPolicy } from "./retry";
 
+export interface Transitionals {
+  silentJSONParsing: boolean;
+  forcedJSONParsing: boolean;
+}
+
 export interface HtypRequestConfig<D = any, P extends object = object> {
   baseUrl?: string;
 
@@ -28,7 +33,9 @@ export interface HtypRequestConfig<D = any, P extends object = object> {
 
   transformRequest?: RequestTransforms<D>;
 
-  transformResponse?: TransformResponseFn | TransformResponseFn[];
+  transformResponse?: TransformResponseFn[];
+
+  transitional?: Transitionals;
 
   headers?: RawHtypHeaders | HtypHeaders;
 

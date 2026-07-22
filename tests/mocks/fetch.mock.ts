@@ -6,7 +6,19 @@ export interface FetchCapture {
 }
 
 export interface RespondWithInit extends ResponseInit {
-  body?: BodyInit | null;
+  body?: string | null;
+}
+
+function stringToReadableStream(
+  str: string,
+): ReadableStream<Uint8Array<ArrayBuffer>> {
+  const bytes = new TextEncoder().encode(str);
+  return new ReadableStream({
+    start(controller) {
+      controller.enqueue(bytes);
+      controller.close();
+    },
+  });
 }
 
 export class MockFetch {
@@ -30,7 +42,16 @@ export class MockFetch {
       capture.body = init?.body;
       capture.headers = new Headers(init?.headers);
 
-      return new Response(this._respondWith.body, this._respondWith);
+      let stream: ReadableStream<Uint8Array<ArrayBuffer>> | null = null;
+
+      if (
+        this._respondWith.body !== null &&
+        this._respondWith.body !== undefined
+      ) {
+        stream = stringToReadableStream(this._respondWith.body);
+      }
+
+      return new Response(stream, this._respondWith);
     };
   }
 }

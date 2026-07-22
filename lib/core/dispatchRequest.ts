@@ -12,33 +12,35 @@ export default async function dispatchRequest<D, P extends object>(
     body: config._data,
   });
 
-  let data: AcceptedResponseTransformerTypes;
+  let data: AcceptedResponseTransformerTypes = null;
 
-  switch (config.responseType) {
-    case "arraybuffer":
-      data = await response.arrayBuffer();
-      break;
-
-    case "document":
-    case "json":
-    case "text":
-      data = await response.text();
-      break;
-    case "blob":
-      data = await response.blob();
-      break;
-    case "formdata":
-      data = await response.formData();
-      break;
-    case "stream":
-    default:
-      data = response.body;
+  if (response.body !== null) {
+    switch (config.responseType) {
+      case "arraybuffer":
+        data = await response.arrayBuffer();
+        break;
+      case "document":
+      case "json":
+      case "text":
+        data = await response.text();
+        break;
+      case "blob":
+        data = await response.blob();
+        break;
+      case "formdata":
+        data = await response.formData();
+        break;
+      case "stream":
+      default:
+        data = response.body;
+    }
   }
 
-  Object.assign(response, {
+  return {
+    status: response.status,
+    statusText: response.statusText,
     headers: HtypHeaders.from(response.headers),
     data,
-  });
-
-  return response as InternalHtypResponse;
+    raw: response,
+  };
 }

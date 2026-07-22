@@ -1,9 +1,11 @@
 import HtypConfig from "./config";
 import dispatchRequest from "./dispatchRequest";
 import { requestShouldRetry } from "./retries";
+import { transformResponseData } from "./transforms";
 import buildRequestConfig from "../helpers/buildRequestConfig";
 
 import type { HtypResponse } from "../types";
+import type { AcceptedResponseTransformerTypes } from "./config/config.type";
 import type { HtypRequestConfig } from "../types/config";
 import type { HtypI } from "../types/Htyp";
 
@@ -53,7 +55,11 @@ export default class Htyp implements HtypI {
       status: response.status,
       statusText: response.statusText,
       headers: response.headers,
-      data: null as T,
+      data: transformResponseData.call<
+        HtypConfig,
+        [AcceptedResponseTransformerTypes],
+        T | null
+      >(requestConfig, response.data),
     };
   }
 }

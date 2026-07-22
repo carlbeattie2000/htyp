@@ -35,13 +35,16 @@ export type ResponseEncoding = (
 
 export type HttpVersion = 1 | 2;
 
-export type InternalHtypResponse = Response & {
+export interface InternalHtypResponse {
+  status: number;
+  statusText: string;
   headers: HtypHeaders;
   data: AcceptedResponseTransformerTypes;
-};
+  raw: Response;
+}
 
 export interface HtypResponse<T = any, D = any, H = object, P = any> {
-  data: T;
+  data: T | null;
   status: number;
   statusText: string;
   headers: H & HtypHeaders;

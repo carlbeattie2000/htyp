@@ -22,8 +22,8 @@ export default class Utils {
     return this.isArrayBuffer(thing) && ArrayBuffer.isView(thing);
   }
 
-  public isString(thing: unknown): thing is string {
-    return Utils.#typeOfTest("string")(thing);
+  public static isString(thing: unknown): thing is string {
+    return this.#typeOfTest("string")(thing);
   }
 
   public static isFunction(thing: unknown): thing is typeof Function {

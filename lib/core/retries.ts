@@ -3,7 +3,11 @@ import Utils from "../utils";
 import HtypHeaders from "./headers";
 
 import type HtypConfig from "./config";
-import type { Method, StringLiteralOrString } from "../types";
+import type {
+  InternalHtypResponse,
+  Method,
+  StringLiteralOrString,
+} from "../types";
 import type {
   DecorrelatedJitterPolicy,
   ExponentialBackoffPlusEqualJitterPolicy,
@@ -157,7 +161,7 @@ export async function defaultRetryDelayPolicy(
 
 export function requestShouldRetry(
   config: HtypConfig,
-  response: Response,
+  response: InternalHtypResponse,
 ): boolean {
   const configAllowsRetry =
     config.retry &&

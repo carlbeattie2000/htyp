@@ -2,11 +2,14 @@ import Utils from "../../utils";
 import { assertIsObject } from "../../utils/assertions";
 import HtypHeaders from "../headers";
 import { defaultRetryDelayPolicy, defaultRetryPolicy } from "../retries";
+import {
+  defaultTransformRequest,
+  defaultTransformResponse,
+} from "../transforms";
 
 import type {
   RequestTransformFinalResult,
   RequestTransforms,
-  TransformRequestFinalFn,
   TransformResponseFn,
 } from "./config.type";
 import type {
@@ -18,11 +21,9 @@ import type {
 import type {
   HtypRequestConfig,
   InternalHtypRequestConfig,
+  Transitionals,
 } from "../../types/config";
 import type { RetryPolicy } from "../../types/retry";
-
-const defaultTransformRequest: TransformRequestFinalFn<any> = (data) =>
-  JSON.stringify(data);
 
 export default class HtypConfig<
   D = any,
@@ -42,7 +43,9 @@ export default class HtypConfig<
 
   public transformRequest: RequestTransforms<D>;
 
-  public transformResponse: TransformResponseFn | TransformResponseFn[];
+  public transformResponse: TransformResponseFn[];
+
+  public transitional: Transitionals;
 
   public headers: HtypHeaders;
 
@@ -72,7 +75,11 @@ export default class HtypConfig<
       allowAbsoluteUrls: false,
       data: undefined,
       transformRequest: [defaultTransformRequest],
-      transformResponse: (data) => data,
+      transformResponse: [defaultTransformResponse],
+      transitional: {
+        silentJSONParsing: false,
+        forcedJSONParsing: false,
+      },
       headers: new HtypHeaders(),
       responseType: "json",
       timeout: 15_000,
@@ -119,6 +126,8 @@ export default class HtypConfig<
 
     this.transformResponse = config.transformResponse;
 
+    this.transitional = config.transitional;
+
     this.headers = HtypHeaders.from(config.headers);
 
     this.responseType = config.responseType;
@@ -147,6 +156,7 @@ export default class HtypConfig<
       data: this.data,
       transformRequest: this.transformRequest,
       transformResponse: this.transformResponse,
+      transitional: this.transitional,
       headers:
         this.headers instanceof HtypHeaders
           ? this.headers.clone()

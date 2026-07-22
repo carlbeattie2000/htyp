@@ -62,14 +62,7 @@ export type InternalHtypRequestConfig<
   D = any,
   P extends object = object,
 > = Omit<
-  Required<HtypRequestConfig>,
+  Required<HtypRequestConfig<D, P>>,
   "data" | "params" | "redact" | "_data"
-> & {
-  data?: D;
-
-  params?: P;
-
-  redact?: string[];
-
-  _data?: RequestTransformFinalResult;
-};
+> &
+  Pick<HtypRequestConfig<D, P>, "data" | "params" | "redact" | "_data">;

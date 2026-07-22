@@ -211,6 +211,10 @@ export default class HtypConfig<
           return { ...acc, ...current.toObject() };
         }
 
+        if (current.headers && !(current.headers instanceof HtypHeaders)) {
+          current.headers = HtypHeaders.from(current.headers);
+        }
+
         return {
           ...acc,
           ...this.normalizeConfig(this.stripUndefinedValues(current)),

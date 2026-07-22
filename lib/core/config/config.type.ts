@@ -22,7 +22,8 @@ export type AcceptedResponseTransformerTypes =
   | Uint8Array
   | string
   | FormData
-  | object;
+  | object
+  | null;
 
 export type TransformResponseFn = (
   data: AcceptedResponseTransformerTypes,

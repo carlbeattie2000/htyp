@@ -1,4 +1,5 @@
 import type HtypConfig from "./core/config";
+import type { AcceptedResponseTransformerTypes } from "./core/config/config.type";
 import type HtypHeaders from "./core/headers";
 
 export type WithRequired<T, K extends keyof T> = T & Required<Pick<T, K>>;
@@ -36,6 +37,7 @@ export type HttpVersion = 1 | 2;
 
 export type InternalHtypResponse = Response & {
   headers: HtypHeaders;
+  data: AcceptedResponseTransformerTypes;
 };
 
 export interface HtypResponse<T = any, D = any, H = object, P = any> {

@@ -1,4 +1,3 @@
-import type { Adapter } from "./adapters";
 import type {
   RequestTransformFinalResult,
   RequestTransforms,
@@ -48,8 +47,6 @@ export interface HtypRequestConfig<D = any, P extends object = object> {
   _retry?: boolean;
 
   _retryCount?: number;
-
-  _adapter?: Adapter;
 
   _data?: RequestTransformFinalResult;
 }

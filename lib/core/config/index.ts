@@ -1,6 +1,5 @@
 import Utils from "../../utils";
 import { assertIsObject } from "../../utils/assertions";
-import Adapters from "../adapter";
 import HtypHeaders from "../headers";
 import { defaultRetryDelayPolicy, defaultRetryPolicy } from "../retries";
 
@@ -16,7 +15,6 @@ import type {
   ResponseType,
   StringLiteralOrString,
 } from "../../types";
-import type { Adapter } from "../../types/adapters";
 import type {
   HtypRequestConfig,
   InternalHtypRequestConfig,
@@ -64,8 +62,6 @@ export default class HtypConfig<
 
   public _retryCount: number;
 
-  public _adapter: Adapter;
-
   public _data?: RequestTransformFinalResult | undefined;
 
   public static get createDefaultsObj(): InternalHtypRequestConfig {
@@ -96,7 +92,6 @@ export default class HtypConfig<
       httpVersion: 2,
       _retry: false,
       _retryCount: 0,
-      _adapter: Adapters.fetch,
       _data: undefined,
     };
   }
@@ -140,8 +135,6 @@ export default class HtypConfig<
 
     this._retryCount = config._retryCount;
 
-    this._adapter = config._adapter;
-
     this._data = config._data;
   }
 
@@ -165,7 +158,6 @@ export default class HtypConfig<
       httpVersion: this.httpVersion,
       _retry: this._retry,
       _retryCount: this._retryCount,
-      _adapter: this._adapter,
       _data: this._data,
     };
   }

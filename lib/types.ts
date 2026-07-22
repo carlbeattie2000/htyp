@@ -1,6 +1,5 @@
 import type HtypConfig from "./core/config";
 import type HtypHeaders from "./core/headers";
-import type { Adapter } from "./types/adapters";
 
 export type WithRequired<T, K extends keyof T> = T & Required<Pick<T, K>>;
 
@@ -35,6 +34,10 @@ export type ResponseEncoding = (
 
 export type HttpVersion = 1 | 2;
 
+export type InternalHtypResponse = Response & {
+  headers: HtypHeaders;
+};
+
 export interface HtypResponse<T = any, D = any, H = object, P = any> {
   data: T;
   status: number;
@@ -45,5 +48,4 @@ export interface HtypResponse<T = any, D = any, H = object, P = any> {
 
 export type RequestFn = <T, B = any>(
   config: HtypConfig<B>,
-  adapter?: Adapter,
 ) => Promise<HtypResponse<T | null, B>>;

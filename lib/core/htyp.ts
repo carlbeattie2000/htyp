@@ -1,4 +1,5 @@
 import HtypConfig from "./config";
+import dispatchRequest from "./dispatchRequest";
 import { requestShouldRetry } from "./retries";
 import buildRequestConfig from "../helpers/buildRequestConfig";
 
@@ -27,16 +28,14 @@ export default class Htyp implements HtypI {
   ): Promise<HtypResponse<T, D, object, P>> {
     const requestConfig = buildRequestConfig(this.defaults, input, config);
 
-    const adapterResponse = await requestConfig._adapter<T, D, P>(
-      requestConfig,
-    );
+    const response = await dispatchRequest(requestConfig);
 
-    if (requestShouldRetry(requestConfig, adapterResponse)) {
+    if (requestShouldRetry(requestConfig, response)) {
       requestConfig._retry = true;
 
       const updatedDelayPolicy = await requestConfig.retryPolicy.delay(
-        adapterResponse.status,
-        adapterResponse.headers,
+        response.status,
+        response.headers,
         requestConfig.retryPolicy._algorithm,
       );
 
@@ -51,9 +50,9 @@ export default class Htyp implements HtypI {
 
     return {
       config: requestConfig,
-      status: adapterResponse.status,
-      statusText: adapterResponse.statusText,
-      headers: adapterResponse.headers,
+      status: response.status,
+      statusText: response.statusText,
+      headers: response.headers,
       data: null as T,
     };
   }

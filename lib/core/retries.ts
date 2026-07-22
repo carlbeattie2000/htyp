@@ -1,10 +1,9 @@
 import { RetryDelayAlgorithm } from "../types/retry";
 import Utils from "../utils";
+import HtypHeaders from "./headers";
 
 import type HtypConfig from "./config";
-import type HtypHeaders from "./headers";
 import type { Method, StringLiteralOrString } from "../types";
-import type { AdapterResponse } from "../types/adapters";
 import type {
   DecorrelatedJitterPolicy,
   ExponentialBackoffPlusEqualJitterPolicy,
@@ -158,7 +157,7 @@ export async function defaultRetryDelayPolicy(
 
 export function requestShouldRetry(
   config: HtypConfig,
-  adapterResponse: AdapterResponse,
+  response: Response,
 ): boolean {
   const configAllowsRetry =
     config.retry &&
@@ -166,9 +165,9 @@ export function requestShouldRetry(
     config._retryCount < config.retryPolicy.max;
 
   const policyAllowRetry = config.retryPolicy.condition(
-    adapterResponse.status,
+    response.status,
     config.method,
-    adapterResponse.headers,
+    HtypHeaders.from(response.headers),
   );
 
   return configAllowsRetry && policyAllowRetry;

@@ -1,30 +1,32 @@
 {
-  "name": "ston",
+  "name": "htyp",
   "version": "0.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "vitest": "vitest",
+    "vitest-headless": "vitest --browser.headless"
   },
+  "type": "module",
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@babel/core": "^8.0.1",
-    "@babel/preset-env": "^8.0.2",
-    "@babel/preset-typescript": "^8.0.1",
     "@eslint/compat": "^2.1.0",
     "@eslint/js": "^9",
     "@jest/globals": "^30.4.1",
     "@types/node": "^26.1.1",
-    "babel-jest": "^30.4.1",
+    "@vitest/browser-playwright": "^4.1.10",
     "eslint": "^9",
     "eslint-config-airbnb-extended": "^3.1.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.6",
     "jest": "^30.4.2",
+    "playwright": "^1.61.1",
     "prettier": "^3.9.4",
+    "ts-jest": "^29.4.11",
     "tsx": "^4.23.0",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.10"
   }
 }

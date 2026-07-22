@@ -1,13 +1,12 @@
 {
   "compilerOptions": {
-    "rootDir": "./lib",
+    "rootDir": "./",
     "outDir": "./dist",
 
-    "module": "commonjs",
+    "module": "esnext",
     "target": "esnext",
+    "lib": ["ES2023", "DOM", "DOM.Iterable", "DOM.AsyncIterable"],
     "types": [],
-    "lib": ["esnext"],
-    "types": ["node"],
 
     "sourceMap": true,
     "declaration": true,
@@ -32,7 +31,7 @@
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "skipLibCheck": true,
   },
   "include": ["lib/**/*", "tests/**/*"]

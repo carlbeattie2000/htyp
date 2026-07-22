@@ -4,6 +4,12 @@ type AsyncReduceCallback<T, ACC> = (
   index: number,
 ) => Promise<ACC>;
 
+type AsyncMapCallback<T> = (
+  value: T,
+  index: number,
+  array: T[],
+) => Promise<void>;
+
 export default class AsyncArray {
   static async reduce<T = unknown, ACC = unknown>(
     array: T[],

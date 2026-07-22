@@ -82,10 +82,30 @@ export default defineConfig([
       "n/no-unsupported-features/node-builtins": [
         "error",
         {
-          version: ">=21.0.0",
+          version: ">=24.0.0",
           ignores: [], // or leave default
         },
       ],
+      "n/no-unsupported-features/es-builtins": [
+        "error",
+        {
+          version: ">=24.0.0",
+          ignores: [], // or leave default
+        },
+      ],
+      "n/no-unsupported-features/es-syntax": [
+        "error",
+        {
+          version: ">=24.0.0",
+          ignores: [], // or leave default
+        },
+      ],
+      "class-methods-use-this": "off",
+      "@typescript-eslint/no-explicit-any": "off",
+      "no-underscore-dangle": "off",
+      "no-restricted-syntax": "off",
+      "no-await-in-loop": "off",
+      "no-param-reassign": "off",
     },
   },
 ]);

@@ -34,14 +34,32 @@ export default class HtypHeaders {
   public set(
     key: "content-type" | "Content-Type",
     value: StringLiteralOrString<KnownHeaderValues["content-type"]>,
+    rewrite?: boolean,
   ): HtypHeaders;
-  public set(key: string, value: HtypHeaderValue): HtypHeaders;
-  public set(key: HeaderNames, value: HtypHeaderValue): HtypHeaders {
+  public set(
+    key: string,
+    value: HtypHeaderValue,
+    rewrite?: boolean,
+  ): HtypHeaders;
+  public set(
+    key: HeaderNames,
+    value: HtypHeaderValue,
+    rewrite?: boolean,
+  ): HtypHeaders {
     const headerName = normalizeHeader(key);
     if (!isValidHeaderName(headerName)) {
       throw new Error(`Invalid header name: "${headerName}"`);
     }
+
+    if (rewrite !== undefined && !rewrite) {
+      if (!this.store.has(headerName)) {
+        this.store.set(headerName, value);
+      }
+      return this;
+    }
+
     this.store.set(headerName, value);
+
     return this;
   }
 
@@ -218,7 +236,8 @@ export default class HtypHeaders {
 
   public setContentType(
     type?: StringLiteralOrString<KnownHeaderValues["content-type"]>,
+    rewrite?: boolean,
   ): void {
-    this.set("content-type", type);
+    this.set("content-type", type, rewrite);
   }
 }

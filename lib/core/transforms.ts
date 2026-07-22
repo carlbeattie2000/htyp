@@ -27,7 +27,7 @@ export function defaultTransformRequest<T>(
   }
 
   if (hasJsonContentType || isObjectPayload) {
-    headers.set("content-type", "application/json");
+    headers.setContentType("application/json", false);
     return JSON.stringify(data);
   }
 

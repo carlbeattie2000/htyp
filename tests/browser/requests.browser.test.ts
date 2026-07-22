@@ -151,4 +151,59 @@ describe("requests", () => {
     expect(response.statusText).toBe("OK");
     expect(response.headers.getContentType()).toBe("application/json");
   });
+
+  it("should supply correct response", async () => {
+    MockFetch.respondWith({
+      status: 200,
+      statusText: "OK",
+      body: '{"foo": "bar"}',
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const response = await htyp.request<{ foo: string }>("/foo", {
+      method: "post",
+    });
+
+    expect(response.data?.foo).toBe("bar");
+    expect(response.status).toBe(200);
+    expect(response.statusText).toBe("OK");
+    expect(response.headers.getContentType()).toBe("application/json");
+  });
+
+  it("should default Content-Type to application/json", async () => {
+    const response = await htyp.request("/foo");
+
+    expect(response.config.headers.getContentType()).toBe("application/json");
+  });
+
+  it("should not modify the config url with relative baseURL", async () => {
+    MockFetch.respondWith({
+      status: 404,
+      statusText: "NOT FOUND",
+      body: "Resource not found",
+    });
+
+    const response = await htyp.request("/foo", {
+      baseUrl: "/api",
+      responseType: "text",
+    });
+
+    expect(response.config.baseUrl).toBe("/api");
+    expect(response.config.url).toBe("/foo");
+  });
+
+  it("should allow overriding Content-Type header case-insensitive", async () => {
+    const contentType = "application/htyp.typescript+json";
+    const response = await htyp.request("/foo", {
+      method: "post",
+      data: { prop: "value" },
+      headers: {
+        "Content-Type": contentType,
+      },
+    });
+
+    expect(response.config.headers.getContentType()).toBe(contentType);
+  });
 });

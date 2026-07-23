@@ -86,6 +86,7 @@ export default class Htyp implements HtypI {
         [AcceptedResponseTransformerTypes],
         T | null
       >(resolvedConfig, dispatchedRequestResponse.data),
+      validated: false,
     };
 
     for (const interceptor of this.interceptors.response.interceptors) {
@@ -96,6 +97,15 @@ export default class Htyp implements HtypI {
       }
 
       response = interceptorResult as HtypResponse<T, D, object, P>;
+    }
+
+    if (resolvedConfig.responseValidator) {
+      const clonedData = Utils.object.deepClone(response.data);
+      const { responseValidator } = resolvedConfig;
+
+      responseValidator.call(null, clonedData);
+
+      response.validated = true;
     }
 
     return response;
@@ -123,8 +133,6 @@ export default class Htyp implements HtypI {
         ...config,
       };
     }
-
-    debugger;
 
     return this.request(input, config);
   }

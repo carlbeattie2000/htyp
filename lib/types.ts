@@ -43,18 +43,27 @@ export interface InternalHtypResponse {
   raw: Response;
 }
 
-export interface HtypResponse<
-  T = any,
-  D = any,
-  H = object,
-  P extends object = object,
-> {
-  data: T | null;
+interface BaseHtypResponse<D = any, H = object, P extends object = object> {
   status: number;
   statusText: string;
   headers: H & HtypHeaders;
   config: HtypConfig<D, P>;
 }
+
+export type HtypResponse<
+  T = any,
+  D = any,
+  H = object,
+  P extends object = object,
+> =
+  | (BaseHtypResponse<D, H, P> & {
+      validated: false;
+      data: T | null;
+    })
+  | (BaseHtypResponse<D, H, P> & {
+      validated: true;
+      data: T;
+    });
 
 export type RequestFn = <T, B = any>(
   config: HtypConfig<B>,

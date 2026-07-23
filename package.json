@@ -17,7 +17,11 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "vitest": "vitest",
-    "vitest-headless": "vitest --browser.headless"
+    "vitest-headless": "vitest --browser.headless",
+    "lint": "eslint",
+    "lint-fix": "eslint --fix",
+    "prettier": "prettier -c ./lib ./tests",
+    "prettier-write": "prettier --write ./lib ./tests"
   },
   "type": "module",
   "keywords": [],
@@ -36,6 +40,7 @@
     "prettier": "^3.9.4",
     "tsx": "^4.23.0",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.10",
+    "zod": "^4.4.3"
   }
 }

@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { object, string, ZodError } from "zod";
 
 import HtypError from "../../lib/core/HtypError";
 import toFormData from "../../lib/helpers/toFormData";
@@ -270,6 +271,159 @@ describe("requests", () => {
       });
 
       expect(capturedFetch.method).toBe("post");
-    })
+    });
+  });
+
+  it('should validate response data when responeValidator is provided"', async () => {
+    MockFetch.respondWith({
+      status: 200,
+      statusText: "OK",
+      body: '{"foo": "bar"}',
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    function responseValidator(data: unknown) {
+      if (typeof data !== "object" || data === null || !("foo" in data)) {
+        throw new Error("Invalid response data");
+      }
+    }
+
+    const spy = vi.fn(responseValidator);
+
+    await expect(
+      htyp.request<{ foo: string }>("/foo", {
+        method: "post",
+        responseValidator: spy,
+      }),
+    ).resolves.not.toThrow();
+
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it("should throw when response is not validated", async () => {
+    MockFetch.respondWith({
+      status: 200,
+      statusText: "OK",
+      body: '{"foo": "bar"}',
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    function responseValidator(data: unknown) {
+      if (typeof data !== "object" || data === null || !("bar" in data)) {
+        throw new Error("Invalid response data");
+      }
+    }
+
+    const spy = vi.fn(responseValidator);
+
+    await expect(
+      htyp.request<{ foo: string }>("/foo", {
+        method: "post",
+        responseValidator: spy,
+      }),
+    ).rejects.toThrow();
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it("should narrow data to T when validated true", async () => {
+    MockFetch.respondWith({
+      status: 200,
+      statusText: "OK",
+      body: '{"foo": "bar"}',
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    function responseValidator(data: unknown) {
+      if (typeof data !== "object" || data === null || !("foo" in data)) {
+        throw new Error("Invalid response data");
+      }
+    }
+
+    const response = await htyp.request<{ foo: string }>("/foo", {
+      method: "post",
+      responseValidator,
+    });
+
+    expect(response.validated).toBeTruthy();
+  });
+
+  it("should narrow data to T or null when validated false", async () => {
+    MockFetch.respondWith({
+      status: 200,
+      statusText: "OK",
+      body: '{"foo": "bar"}',
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const response = await htyp.request<{ foo: string }>("/foo", {
+      method: "post",
+    });
+
+    expect(response.validated).toBeFalsy();
+  });
+
+  it("should work with zod validator when valid", async () => {
+    MockFetch.respondWith({
+      status: 200,
+      statusText: "OK",
+      body: '{"foo": "bar"}',
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const ValidData = object({
+      foo: string(),
+    });
+
+    const responseValidator = (data: unknown) => ValidData.parse(data);
+
+    await expect(
+      htyp.request<{ foo: string }>("/foo", {
+        method: "post",
+        responseValidator,
+      }),
+    ).resolves.not.toThrow();
+  });
+
+  it("should work with zod validator when invalid", async () => {
+    MockFetch.respondWith({
+      status: 200,
+      statusText: "OK",
+      body: '{"foo": "bar"}',
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const ValidData = object({
+      bar: string(),
+    });
+
+    const responseValidator = (data: unknown) => ValidData.parse(data);
+
+    const zodError = await htyp
+      .request<{ foo: string }>("/foo", {
+        method: "post",
+        responseValidator,
+      })
+      .catch((error: unknown) => error);
+
+    expect(zodError).toBeInstanceOf(ZodError);
+
+    await expect(
+      htyp.request<{ foo: string }>("/foo", {
+        method: "post",
+        responseValidator,
+      }),
+    ).rejects.toThrow();
   });
 });

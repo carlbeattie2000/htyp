@@ -44,6 +44,9 @@ devDependencies:
   vitest:
     specifier: ^4.1.10
     version: 4.1.10(@types/node@26.1.1)(@vitest/browser-playwright@4.1.10)(vite@8.1.5)
+  zod:
+    specifier: ^4.4.3
+    version: 4.4.3
 
 packages:
 

@@ -33,3 +33,5 @@ export type TransformResponseFn = (
   this: HtypConfig,
   data: AcceptedResponseTransformerTypes,
 ) => AcceptedResponseTransformerTypes;
+
+export type ResponseValidatorFn<T> = (data: T) => asserts data is T;

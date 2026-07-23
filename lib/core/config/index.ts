@@ -10,6 +10,7 @@ import {
 import type {
   RequestTransformFinalResult,
   RequestTransforms,
+  ResponseValidatorFn,
   TransformResponseFn,
 } from "./config.type";
 import type {
@@ -45,6 +46,8 @@ export default class HtypConfig<
 
   public transformResponse: TransformResponseFn[];
 
+  public responseValidator?: ResponseValidatorFn<unknown>;
+
   public transitional: Transitionals;
 
   public headers: HtypHeaders;
@@ -76,6 +79,7 @@ export default class HtypConfig<
       data: undefined,
       transformRequest: [defaultTransformRequest],
       transformResponse: [defaultTransformResponse],
+      responseValidator: undefined,
       transitional: {
         silentJSONParsing: false,
         forcedJSONParsing: false,
@@ -128,6 +132,8 @@ export default class HtypConfig<
 
     this.transformResponse = config.transformResponse;
 
+    this.responseValidator = config.responseValidator;
+
     this.transitional = config.transitional;
 
     this.headers = HtypHeaders.from(config.headers);
@@ -158,6 +164,7 @@ export default class HtypConfig<
       data: this.data,
       transformRequest: this.transformRequest,
       transformResponse: this.transformResponse,
+      responseValidator: this.responseValidator,
       transitional: this.transitional,
       headers:
         this.headers instanceof HtypHeaders
@@ -185,7 +192,7 @@ export default class HtypConfig<
   ): Partial<HtypRequestConfig<D, P>> {
     return Utils.object.removeUndefinedProperties(
       Utils.object.deepClone(config),
-      ["data", "_data"],
+      ["data", "_data", "responseValidator"],
     );
   }
 
@@ -226,7 +233,7 @@ export default class HtypConfig<
     assertIsObject<InternalHtypRequestConfig<D, P>>(
       combinedConfigs,
       this.createDefaultsObj,
-      ["data", "_data"],
+      ["data", "_data", "responseValidator"],
     );
 
     return new HtypConfig<D, P>(combinedConfigs);

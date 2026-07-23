@@ -1,6 +1,7 @@
 import type {
   RequestTransformFinalResult,
   RequestTransforms,
+  ResponseValidatorFn,
   TransformResponseFn,
 } from "../core/config/config.type";
 import type HtypHeaders from "../core/headers";
@@ -35,6 +36,8 @@ export interface HtypRequestConfig<D = any, P extends object = object> {
 
   transformResponse?: TransformResponseFn[];
 
+  responseValidator?: ResponseValidatorFn<unknown>;
+
   transitional?: Transitionals;
 
   headers?: RawHtypHeaders | HtypHeaders;
@@ -63,6 +66,9 @@ export type InternalHtypRequestConfig<
   P extends object = object,
 > = Omit<
   Required<HtypRequestConfig<D, P>>,
-  "data" | "params" | "redactKeys" | "_data"
+  "data" | "params" | "redactKeys" | "_data" | "responseValidator"
 > &
-  Pick<HtypRequestConfig<D, P>, "data" | "params" | "redactKeys" | "_data">;
+  Pick<
+    HtypRequestConfig<D, P>,
+    "data" | "params" | "redactKeys" | "_data" | "responseValidator"
+  >;

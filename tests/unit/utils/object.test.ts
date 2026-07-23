@@ -144,6 +144,10 @@ describe("ObjectUtils::deepClone", () => {
       public toString() {
         return `${this.name}.${this.age}`;
       }
+
+      public clone() {
+        return new Person(this.name, this.age);
+      }
     }
 
     const instance = new Person("joe", 25);
@@ -175,6 +179,16 @@ describe("ObjectUtils::deepClone", () => {
 
       public toString() {
         return `${this.name}.${this.age}`;
+      }
+
+      public clone() {
+        const person = new Person(this.name, this.age);
+
+        person.friendAges = {
+          ...this.friendAges,
+        };
+
+        return person;
       }
     }
 

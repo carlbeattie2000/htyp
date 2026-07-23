@@ -56,7 +56,7 @@ export default class ObjectUtils {
     return obj;
   }
 
-  public static isObject(obj: unknown): boolean {
+  public static isObject(obj: unknown): obj is object {
     return typeof obj === "object" && obj !== null;
   }
 
@@ -171,6 +171,12 @@ export default class ObjectUtils {
       return newObj as T;
     }
 
-    return this.deepCloneInstance(thing as object) as T;
+    if (this.isObject(thing)) {
+      if ("clone" in thing && typeof thing.clone === "function") {
+        return thing.clone() as T;
+      }
+    }
+
+    throw new Error(`${toString.call(thing)} does not have a clone method`);
   }
 }

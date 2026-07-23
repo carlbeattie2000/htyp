@@ -43,7 +43,12 @@ export interface InternalHtypResponse {
   raw: Response;
 }
 
-export interface HtypResponse<T = any, D = any, H = object, P = any> {
+export interface HtypResponse<
+  T = any,
+  D = any,
+  H = object,
+  P extends object = object,
+> {
   data: T | null;
   status: number;
   statusText: string;

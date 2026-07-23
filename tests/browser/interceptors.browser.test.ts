@@ -1,6 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import Interceptor from "../../lib/core/interceptors";
 import htyp from "../../lib/htyp";
 import { MockFetch } from "../mocks/fetch.mock";
 

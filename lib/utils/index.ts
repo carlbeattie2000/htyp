@@ -1,8 +1,6 @@
-import { assertIsArray, assertIsObject } from "./assertions";
 import ObjectUtils from "./objects";
 import TypeUtils from "./typeOf";
 
-import type { PrimativeType } from "./typeOf";
 import type HtypError from "../core/HtypError";
 
 export default class Utils {
@@ -12,7 +10,7 @@ export default class Utils {
 
   static #typeOfTest = TypeUtils.typeOfTest;
 
-  static #unsafeKindOfTest = TypeUtils.unsafeKindOfTest;
+  public static unsafeKindOfTest = TypeUtils.unsafeKindOfTest;
 
   public static isArrayBuffer(thing: unknown): thing is ArrayBuffer {
     return this.#kindOfTest("ArrayBuffer")(thing);
@@ -76,23 +74,6 @@ export default class Utils {
 
   public static isSet(thing: unknown): thing is Set<any> {
     return this.#kindOfTest("Set")(thing);
-  }
-
-  public static isSetOfType<T>(
-    thing: unknown,
-    types: PrimativeType | PrimativeType[],
-  ): thing is Set<T> {
-    if (!Utils.isSet(thing)) {
-      return false;
-    }
-
-    return thing.values().every((alue) => {
-      if (Array.isArray(types)) {
-        return types.some((type) => this.#unsafeKindOfTest(value, type));
-      }
-
-      return this.#unsafeKindOfTest(value, types);
-    });
   }
 
   public static isHtypError(error: Error): error is HtypError {

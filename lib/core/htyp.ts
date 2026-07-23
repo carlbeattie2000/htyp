@@ -95,7 +95,7 @@ export default class Htyp implements HtypI {
         interceptorResult = await interceptorResult;
       }
 
-      response = interceptorResult;
+      response = interceptorResult as HtypResponse<T, D, object, P>;
     }
 
     return response;

@@ -111,6 +111,18 @@ export default class Utils {
     return !thing.some((el) => this.isPlainObject(el) || this.isArray(el));
   }
 
+  public static isThenable(thing: unknown): thing is PromiseLike<unknown> {
+    if (
+      (thing !== null && typeof thing === "object") ||
+      (typeof thing === "function" &&
+        "then" in thing &&
+        typeof thing.then === "function")
+    ) {
+      return true;
+    }
+    return false;
+  }
+
   public static toArray(thing: unknown): unknown[] | null {
     if (thing === null || thing === undefined) {
       return null;

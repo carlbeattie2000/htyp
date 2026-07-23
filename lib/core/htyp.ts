@@ -1,17 +1,28 @@
 import HtypConfig from "./config";
 import dispatchRequest from "./dispatchRequest";
+import Interceptor from "./interceptors";
 import { requestShouldRetry } from "./retries";
 import { transformResponseData } from "./transforms";
 import buildRequestConfig from "../helpers/buildRequestConfig";
 import resolveConfig from "../helpers/resolveConfig";
+import Utils from "../utils";
 
 import type { HtypResponse } from "../types";
 import type { AcceptedResponseTransformerTypes } from "./config/config.type";
 import type { HtypRequestConfig } from "../types/config";
 import type { HtypI } from "../types/Htyp";
+import type {
+  RequestInterceptorFns,
+  ResponseInterceptorFns,
+} from "../types/interceptors";
 
 export default class Htyp implements HtypI {
   public defaults: HtypConfig;
+
+  public interceptors: {
+    request: Interceptor<RequestInterceptorFns>;
+    response: Interceptor<ResponseInterceptorFns>;
+  };
 
   public constructor(config?: HtypRequestConfig) {
     if (config) {
@@ -19,6 +30,8 @@ export default class Htyp implements HtypI {
     } else {
       this.defaults = HtypConfig.createDefaults;
     }
+
+    this.interceptors = Interceptor.newRequestAndResponseInterceptors();
   }
 
   public create(config?: HtypRequestConfig): Htyp {
@@ -29,17 +42,28 @@ export default class Htyp implements HtypI {
     input: string | HtypRequestConfig<D, P>,
     config?: HtypRequestConfig<D, P>,
   ): Promise<HtypResponse<T, D, object, P>> {
-    const requestConfig = buildRequestConfig(this.defaults, input, config);
+    let requestConfig = buildRequestConfig(this.defaults, input, config);
+
+    for (const interceptor of this.interceptors.request.interceptors) {
+      let interceptorResult = interceptor(requestConfig);
+
+      if (Utils.isThenable(interceptorResult)) {
+        interceptorResult = await interceptorResult;
+      }
+
+      requestConfig = interceptorResult as HtypConfig<D, P>;
+    }
+
     const resolvedConfig = resolveConfig(requestConfig);
 
-    const response = await dispatchRequest(resolvedConfig);
+    const dispatchedRequestResponse = await dispatchRequest(resolvedConfig);
 
-    if (requestShouldRetry(resolvedConfig, response)) {
+    if (requestShouldRetry(resolvedConfig, dispatchedRequestResponse)) {
       resolvedConfig._retry = true;
 
       const updatedDelayPolicy = await resolvedConfig.retryPolicy.delay(
-        response.status,
-        response.headers,
+        dispatchedRequestResponse.status,
+        dispatchedRequestResponse.headers,
         resolvedConfig.retryPolicy._algorithm,
       );
 
@@ -52,16 +76,28 @@ export default class Htyp implements HtypI {
       return this.request(resolvedConfig);
     }
 
-    return {
+    let response: HtypResponse<T, D, object, P> = {
       config: requestConfig,
-      status: response.status,
-      statusText: response.statusText,
-      headers: response.headers,
+      status: dispatchedRequestResponse.status,
+      statusText: dispatchedRequestResponse.statusText,
+      headers: dispatchedRequestResponse.headers,
       data: transformResponseData.call<
         HtypConfig,
         [AcceptedResponseTransformerTypes],
         T | null
-      >(resolvedConfig, response.data),
+      >(resolvedConfig, dispatchedRequestResponse.data),
     };
+
+    for (const interceptor of this.interceptors.response.interceptors) {
+      let interceptorResult = interceptor(response);
+
+      if (Utils.isThenable(interceptorResult)) {
+        interceptorResult = await interceptorResult;
+      }
+
+      response = interceptorResult;
+    }
+
+    return response;
   }
 }

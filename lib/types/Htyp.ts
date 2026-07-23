@@ -1,5 +1,10 @@
+import type Interceptor from "../core/interceptors";
 import type { HtypResponse } from "../types";
 import type { HtypRequestConfig } from "./config";
+import type {
+  RequestInterceptorFns,
+  ResponseInterceptorFns,
+} from "./interceptors";
 import type HtypConfig from "../core/config";
 
 type RequestFn = <T = any, D = any, P extends object = object>(
@@ -9,6 +14,11 @@ type RequestFn = <T = any, D = any, P extends object = object>(
 
 export interface HtypI {
   defaults: HtypConfig;
+
+  interceptors: {
+    request: Interceptor<RequestInterceptorFns>;
+    response: Interceptor<ResponseInterceptorFns>;
+  };
 
   create: (config?: HtypRequestConfig) => HtypI;
 

@@ -1,7 +1,8 @@
-import Utils from "../utils";
+import TypeUtils from "../utils/typeOf";
 
 import type HtypConfig from "./config";
 import type { EnumOrString, HtypResponse } from "../types";
+import type { InternalHtypRequestConfig } from "../types/config";
 
 enum HtypErrorCodes {
   ERR_INVALID_URL = "ERR_INVALID_URL",
@@ -13,7 +14,7 @@ enum HtypErrorCodes {
 interface HtypErrorJson {
   message: string;
   name: string;
-  config?: HtypConfig;
+  config?: InternalHtypRequestConfig;
   code?: string;
   status?: number;
 }
@@ -66,7 +67,7 @@ export default class HtypError<
     request?: unknown,
     response?: HtypResponse<T, D, object, P>,
   ): HtypError<T, D, P> {
-    if (Utils.type.isHtypError(error)) {
+    if (TypeUtils.isHtypError(error)) {
       return new HtypError(
         error.message,
         code ?? error.code,
@@ -86,13 +87,7 @@ export default class HtypError<
   }
 
   public toJSON(): HtypErrorJson {
-    const jsonPreparedConfig = this.config?.redact
-      ? Utils.object.valueReplacer(
-          this.config,
-          this.config.redact,
-          "redacted",
-        )
-      : this.config;
+    const jsonPreparedConfig = this.config ? this.config.redact() : undefined;
 
     return {
       message: this.message,

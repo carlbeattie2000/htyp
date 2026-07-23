@@ -49,7 +49,7 @@ export interface HtypRequestConfig<D = any, P extends object = object> {
 
   httpVersion?: HttpVersion;
 
-  redact?: string[];
+  redactKeys?: string[];
 
   _retry?: boolean;
 
@@ -63,6 +63,6 @@ export type InternalHtypRequestConfig<
   P extends object = object,
 > = Omit<
   Required<HtypRequestConfig<D, P>>,
-  "data" | "params" | "redact" | "_data"
+  "data" | "params" | "redactKeys" | "_data"
 > &
-  Pick<HtypRequestConfig<D, P>, "data" | "params" | "redact" | "_data">;
+  Pick<HtypRequestConfig<D, P>, "data" | "params" | "redactKeys" | "_data">;

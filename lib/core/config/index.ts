@@ -59,7 +59,7 @@ export default class HtypConfig<
 
   public httpVersion: HttpVersion;
 
-  public redact?: string[] | undefined;
+  public redactKeys?: string[] | undefined;
 
   public _retry: boolean;
 
@@ -250,5 +250,21 @@ export default class HtypConfig<
     config: HtypConfig<D, P>,
   ): HtypConfig<D, P> {
     return new HtypConfig<D, P>(Utils.object.deepClone(config.toObject()));
+  }
+
+  public redact(): InternalHtypRequestConfig {
+    return HtypConfig.redact(this);
+  }
+
+  public static redact(config: HtypConfig): InternalHtypRequestConfig {
+    if (config.redactKeys && config.redactKeys.length > 0) {
+      return Utils.object.valueReplacer(
+        config.toObject(),
+        config.redactKeys,
+        "redacted",
+      );
+    }
+
+    return config;
   }
 }

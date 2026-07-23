@@ -249,6 +249,6 @@ export default class HtypConfig<
   public static clone<D = any, P extends object = object>(
     config: HtypConfig<D, P>,
   ): HtypConfig<D, P> {
-    return Utils.Object.deepClone(config);
+    return new HtypConfig<D, P>(Utils.Object.deepClone(config.toObject()));
   }
 }

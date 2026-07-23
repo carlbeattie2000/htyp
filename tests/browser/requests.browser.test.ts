@@ -25,7 +25,7 @@ describe("requests", () => {
     await htyp.request("/foo");
 
     expect(capturedFetch.url).toBe("/foo");
-    expect(capturedFetch.method).toBe("GET");
+    expect(capturedFetch.method).toBe("get");
   });
 
   it("should treat method value as lowercase string", async () => {

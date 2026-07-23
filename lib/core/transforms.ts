@@ -21,7 +21,8 @@ export function defaultTransformRequest<T>(
     Utils.isArrayBuffer(data) ||
     Utils.isFile(data) ||
     Utils.isBlob(data) ||
-    Utils.isReadableStream(data)
+    Utils.isReadableStream(data) ||
+    Utils.isFormData(data)
   ) {
     return data;
   }

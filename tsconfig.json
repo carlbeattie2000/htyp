@@ -34,5 +34,6 @@
     "moduleResolution": "bundler",
     "skipLibCheck": true,
   },
-  "include": ["lib/**/*", "tests/**/*"]
+  "include": ["lib", "tests"],
+  "exclude": ["node_modules", "dist"]
 }

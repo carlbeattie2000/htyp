@@ -1,5 +1,5 @@
 {
-  "name": "htyp",
+  "name": "htyp-fetch",
   "version": "0.0.1",
   "description": "",
   "main": "./dist/lib/htyp.js",
@@ -15,6 +15,7 @@
     "dist"
   ],
   "scripts": {
+    "build": "tsc -p tsconfig.build.json",
     "vitest": "vitest",
     "vitest-headless": "vitest --browser.headless"
   },

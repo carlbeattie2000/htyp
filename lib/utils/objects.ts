@@ -1,27 +1,7 @@
-const { iterator, toStringTag } = Symbol;
+import TypeUtils from "./typeOf";
+import HtypError from "../core/HtypError";
 
 export default class ObjectUtils {
-  public static hasOwnInPrototypeChain(
-    thing: unknown,
-    prop: string | symbol,
-  ): boolean {
-    let obj = thing;
-    const seen: object[] = [];
-
-    while (obj != null && obj !== Object.prototype) {
-      if (seen.includes(obj)) {
-        return false;
-      }
-      seen.push(obj);
-
-      if (Object.hasOwn(obj, prop.toString())) {
-        return true;
-      }
-      obj = Object.getPrototypeOf(obj);
-    }
-    return false;
-  }
-
   public static removeUndefinedProperties<T extends object>(
     obj: T,
     excludeKeys: (Extract<keyof T, string> | (string & {}))[] = [],
@@ -56,24 +36,33 @@ export default class ObjectUtils {
     return obj;
   }
 
-  public static isObject(obj: unknown): obj is object {
-    return typeof obj === "object" && obj !== null;
-  }
+  public static objectValueReplacer<T extends object>(
+    obj: T,
+    keys: string[],
+    replaceWith: string | undefined,
+  ): T {
+    const clonedObj = this.deepClone(obj);
+    const lowercaseKeys = keys.map((key) => key.toString().toLowerCase());
 
-  public static isPlainObject(obj: unknown): boolean {
-    if (!this.isObject(obj)) {
-      return false;
-    }
+    Object.entries(clonedObj).forEach(([key]) => {
+      const keyAsLowercase = key.toLowerCase();
 
-    const prototype = Object.getPrototypeOf(obj);
+      if (lowercaseKeys.includes(keyAsLowercase)) {
+        Object.defineProperty(clonedObj, keyAsLowercase, {
+          value: replaceWith,
+        });
+      } else if (TypeUtils.isObject(clonedObj[keyAsLowercase as keyof T])) {
+        Object.defineProperty(clonedObj, keyAsLowercase, {
+          value: this.objectValueReplacer<any>(
+            clonedObj[keyAsLowercase as keyof T],
+            keys,
+            replaceWith,
+          ),
+        });
+      }
+    });
 
-    return (
-      prototype === null ||
-      prototype === Object.prototype ||
-      (Object.getPrototypeOf(prototype) === null &&
-        !this.hasOwnInPrototypeChain(obj, toStringTag) &&
-        !this.hasOwnInPrototypeChain(obj, iterator))
-    );
+    return clonedObj;
   }
 
   public static forEach(
@@ -96,7 +85,7 @@ export default class ObjectUtils {
     onVisit: (key: string, value: unknown, path?: string[]) => boolean,
     path?: string[],
   ): void {
-    if (!this.isObject(obj)) {
+    if (!TypeUtils.isObject(obj)) {
       throw new TypeError("target should be an object");
     }
 
@@ -114,7 +103,7 @@ export default class ObjectUtils {
     const clone = Object.create(proto);
 
     for (const [key, value] of Object.entries(instance)) {
-      if (this.isObject(value)) {
+      if (TypeUtils.isObject(value)) {
         clone[key] = this.deepClone(value);
       } else {
         clone[key] = value;
@@ -125,7 +114,7 @@ export default class ObjectUtils {
   }
 
   public static deepClone<T>(thing: T): T {
-    if (!this.isObject(thing)) {
+    if (!TypeUtils.isObject(thing)) {
       return thing;
     }
 
@@ -147,21 +136,21 @@ export default class ObjectUtils {
 
     if (Array.isArray(thing)) {
       return thing.map((element): any => {
-        if (this.isObject(element)) {
+        if (TypeUtils.isObject(element)) {
           return this.deepClone(element);
         }
         return element;
       }) as T;
     }
 
-    if (this.isPlainObject(thing)) {
+    if (TypeUtils.isPlainObject(thing)) {
       const obj = thing as Record<string, unknown>;
       const newObj: Record<string, unknown> = {};
 
       Object.entries(obj).forEach(([key, value]) => {
         const objKey = key as keyof object;
 
-        if (this.isObject(value)) {
+        if (TypeUtils.isObject(value)) {
           newObj[objKey] = this.deepClone(value);
         } else {
           newObj[objKey] = value;
@@ -171,12 +160,15 @@ export default class ObjectUtils {
       return newObj as T;
     }
 
-    if (this.isObject(thing)) {
+    if (TypeUtils.isObject(thing)) {
       if ("clone" in thing && typeof thing.clone === "function") {
         return thing.clone() as T;
       }
     }
 
-    throw new Error(`${toString.call(thing)} does not have a clone method`);
+    throw new HtypError(
+      `${toString.call(thing)} does not have a clone method`,
+      HtypError.ERR_INSTANCE_MISSING_CLONE,
+    );
   }
 }

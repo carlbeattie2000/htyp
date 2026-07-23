@@ -106,6 +106,7 @@ export default defineConfig([
       "no-restricted-syntax": "off",
       "no-await-in-loop": "off",
       "no-param-reassign": "off",
+      "max-classes-per-file": "off",
     },
   },
 ]);

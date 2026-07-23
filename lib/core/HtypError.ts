@@ -1,5 +1,4 @@
 import Utils from "../utils";
-import objectValueReplacer from "../utils/objectValueReplacer";
 
 import type HtypConfig from "./config";
 import type { EnumOrString, HtypResponse } from "../types";
@@ -67,7 +66,7 @@ export default class HtypError<
     request?: unknown,
     response?: HtypResponse<T, D, object, P>,
   ): HtypError<T, D, P> {
-    if (Utils.isHtypError(error)) {
+    if (Utils.type.isHtypError(error)) {
       return new HtypError(
         error.message,
         code ?? error.code,

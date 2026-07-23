@@ -100,4 +100,108 @@ export default class Htyp implements HtypI {
 
     return response;
   }
+
+  public async get<T = any, D = any, P extends object = object>(
+    input: string | HtypRequestConfig<D, P>,
+    config?: HtypRequestConfig<D, P>,
+  ): Promise<HtypResponse<T, D, object, P>> {
+    return this.request(input, config);
+  }
+
+  public async post<T = any, D = any, P extends object = object>(
+    input: string | HtypRequestConfig<D, P>,
+    config?: HtypRequestConfig<D, P>,
+  ): Promise<HtypResponse<T, D, object, P>> {
+    if (typeof input !== "string") {
+      input = {
+        method: "post",
+        ...input,
+      };
+    } else {
+      config = {
+        method: "post",
+        ...config,
+      };
+    }
+
+    debugger;
+
+    return this.request(input, config);
+  }
+
+  public async put<T = any, D = any, P extends object = object>(
+    input: string | HtypRequestConfig<D, P>,
+    config?: HtypRequestConfig<D, P>,
+  ): Promise<HtypResponse<T, D, object, P>> {
+    if (typeof input !== "string") {
+      input = {
+        method: "put",
+        ...input,
+      };
+    } else {
+      config = {
+        method: "put",
+        ...config,
+      };
+    }
+
+    return this.request(input, config);
+  }
+
+  public async patch<T = any, D = any, P extends object = object>(
+    input: string | HtypRequestConfig<D, P>,
+    config?: HtypRequestConfig<D, P>,
+  ): Promise<HtypResponse<T, D, object, P>> {
+    if (typeof input !== "string") {
+      input = {
+        method: "patch",
+        ...input,
+      };
+    } else {
+      config = {
+        method: "patch",
+        ...config,
+      };
+    }
+
+    return this.request(input, config);
+  }
+
+  public async delete<T = any, D = any, P extends object = object>(
+    input: string | HtypRequestConfig<D, P>,
+    config?: HtypRequestConfig<D, P>,
+  ): Promise<HtypResponse<T, D, object, P>> {
+    if (typeof input !== "string") {
+      input = {
+        method: "delete",
+        ...input,
+      };
+    } else {
+      config = {
+        method: "delete",
+        ...config,
+      };
+    }
+
+    return this.request(input, config);
+  }
+
+  public async head<T = any, D = any, P extends object = object>(
+    input: string | HtypRequestConfig<D, P>,
+    config?: HtypRequestConfig<D, P>,
+  ): Promise<HtypResponse<T, D, object, P>> {
+    if (typeof input !== "string") {
+      input = {
+        method: "head",
+        ...input,
+      };
+    } else {
+      config = {
+        method: "head",
+        ...config,
+      };
+    }
+
+    return this.request(input, config);
+  }
 }

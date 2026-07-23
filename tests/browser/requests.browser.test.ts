@@ -226,4 +226,50 @@ describe("requests", () => {
         ?.includes("multipart/form-data"),
     ).toBeTruthy();
   });
+
+  describe("Htyp::methods", () => {
+    it("should set method to get", async () => {
+      await htyp.get("/foo");
+
+      expect(capturedFetch.method).toBe("get");
+    });
+
+    it("should set method to post", async () => {
+      await htyp.post("/foo");
+
+      expect(capturedFetch.method).toBe("post");
+    });
+
+    it("should set method to put", async () => {
+      await htyp.put("/foo");
+
+      expect(capturedFetch.method).toBe("put");
+    });
+
+    it("should set method to patch", async () => {
+      await htyp.patch("/foo");
+
+      expect(capturedFetch.method).toBe("patch");
+    });
+
+    it("should set method to delete", async () => {
+      await htyp.delete("/foo");
+
+      expect(capturedFetch.method).toBe("delete");
+    });
+
+    it("should set method to head", async () => {
+      await htyp.head("/foo");
+
+      expect(capturedFetch.method).toBe("head");
+    });
+
+    it('should override method when user specifies method in config"', async () => {
+      await htyp.get("/foo", {
+        method: "post",
+      });
+
+      expect(capturedFetch.method).toBe("post");
+    })
+  });
 });

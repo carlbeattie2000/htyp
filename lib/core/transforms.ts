@@ -15,14 +15,14 @@ export function defaultTransformRequest<T>(
 ): RequestTransformFinalResult {
   const contentType = headers.getContentType();
   const hasJsonContentType = contentType.includes("application/json");
-  const isObjectPayload = Utils.isObject(data);
+  const isObjectPayload = Utils.type.isObject(data);
 
   if (
-    Utils.isArrayBuffer(data) ||
-    Utils.isFile(data) ||
-    Utils.isBlob(data) ||
-    Utils.isReadableStream(data) ||
-    Utils.isFormData(data)
+    Utils.type.isArrayBuffer(data) ||
+    Utils.type.isFile(data) ||
+    Utils.type.isBlob(data) ||
+    Utils.type.isReadableStream(data) ||
+    Utils.type.isFormData(data)
   ) {
     return data;
   }
@@ -60,14 +60,14 @@ export function defaultTransformResponse(
   this: HtypConfig,
   data: AcceptedResponseTransformerTypes,
 ): AcceptedResponseTransformerTypes {
-  if (Utils.isReadableStream(data)) {
+  if (Utils.type.isReadableStream(data)) {
     return data;
   }
 
   const JSONRequested =
     this.responseType === "json" || this.transitional.forcedJSONParsing;
 
-  if (Utils.isString(data) && JSONRequested) {
+  if (Utils.type.isString(data) && JSONRequested) {
     try {
       return JSON.parse(data) as JsonValue;
     } catch (err: unknown) {

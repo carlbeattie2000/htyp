@@ -87,7 +87,11 @@ export default class HtypError<
 
   public toJSON(): HtypErrorJson {
     const jsonPreparedConfig = this.config?.redact
-      ? objectValueReplacer(this.config, this.config.redact, "redacted")
+      ? Utils.object.objectValueReplacer(
+          this.config,
+          this.config.redact,
+          "redacted",
+        )
       : this.config;
 
     return {

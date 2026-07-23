@@ -24,7 +24,7 @@ export default function buildURL<P extends object>(
 
   const encoder = options?.encoder ?? encode;
 
-  const serializedParams = Utils.isURLSearchParams(params)
+  const serializedParams = Utils.type.isURLSearchParams(params)
     ? params.toString()
     : new HtypURLSearchParams(params, options).toString(encoder);
 

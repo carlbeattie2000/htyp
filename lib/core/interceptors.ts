@@ -9,7 +9,7 @@ export default class Interceptor<InterceptorFn> {
   private _interceptors: InterceptorFn[];
 
   public get interceptors(): InterceptorFn[] {
-    return Utils.Object.deepClone(this._interceptors);
+    return Utils.object.deepClone(this._interceptors);
   }
 
   constructor() {

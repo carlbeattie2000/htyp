@@ -47,7 +47,7 @@ export default class Htyp implements HtypI {
     for (const interceptor of this.interceptors.request.interceptors) {
       let interceptorResult = interceptor(requestConfig);
 
-      if (Utils.isThenable(interceptorResult)) {
+      if (Utils.type.isThenable(interceptorResult)) {
         interceptorResult = await interceptorResult;
       }
 
@@ -91,7 +91,7 @@ export default class Htyp implements HtypI {
     for (const interceptor of this.interceptors.response.interceptors) {
       let interceptorResult = interceptor(response);
 
-      if (Utils.isThenable(interceptorResult)) {
+      if (Utils.type.isThenable(interceptorResult)) {
         interceptorResult = await interceptorResult;
       }
 

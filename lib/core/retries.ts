@@ -95,7 +95,7 @@ async function decorrelatedJitterDelay(
 ): Promise<DecorrelatedJitterPolicy> {
   const delayByMs = Math.max(
     policy.maxDelayMs,
-    Utils.random(
+    Utils.math.random(
       policy.delayByMs,
       (policy.previousDelayByMs ?? policy.delayByMs) * policy.multiplyBy,
     ),
@@ -111,7 +111,7 @@ async function decorrelatedJitterDelay(
 async function FibonacciBackoffDelay(policy: FibonacciBackoffPolicy) {
   const delayByMs = Math.max(
     policy.maxDelayMs,
-    Utils.Fibonacci(policy.retryCount === 0 ? 1 : policy.retryCount) *
+    Utils.math.Fibonacci(policy.retryCount === 0 ? 1 : policy.retryCount) *
       policy.delayByMs,
   );
 

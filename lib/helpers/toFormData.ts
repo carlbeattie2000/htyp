@@ -3,7 +3,7 @@ import Utils from "../utils";
 import type { ToFormDataOptions } from "../types/helpers/toFormData.types";
 
 function isVisitable(thing: unknown): boolean {
-  return Utils.isPlainObject(thing) || Utils.isArray(thing);
+  return Utils.type.isPlainObject(thing) || Utils.type.isArray(thing);
 }
 
 function removeBrackets(key: string): string {
@@ -35,7 +35,7 @@ function shouldSkipValue(value: unknown): boolean {
 }
 
 function normalizeValue(value: unknown): string {
-  if (Utils.isDate(value)) {
+  if (Utils.type.isDate(value)) {
     return value.toISOString();
   }
 
@@ -58,10 +58,11 @@ function defaultVisitorFn(
 
   const hasNoPath = !path;
   const isFlatArrayOrHinted =
-    (Utils.isArray(value) && Utils.isFlatArray(value)) || key.endsWith("[]");
+    (Utils.type.isArray(value) && Utils.type.isFlatArray(value)) ||
+    key.endsWith("[]");
 
   if (hasNoPath && isFlatArrayOrHinted) {
-    const arr = Utils.toArray(value);
+    const arr = Utils.to.array(value);
     if (arr) {
       key = removeBrackets(key);
 
@@ -96,7 +97,7 @@ export default function toFormData<T extends object>(
   formData?: FormData | null,
   options?: ToFormDataOptions,
 ): FormData {
-  if (!Utils.isObject(obj)) {
+  if (!Utils.type.isObject(obj)) {
     throw new TypeError("Target should be an object.");
   }
 
@@ -104,7 +105,7 @@ export default function toFormData<T extends object>(
 
   const visitorFn = options?.visitor ?? defaultVisitorFn;
 
-  Utils.Object.iterateObject(obj, (key, value, path) =>
+  Utils.object.iterateObject(obj, (key, value, path) =>
     visitorFn.call(formData, key, value, path, options),
   );
 

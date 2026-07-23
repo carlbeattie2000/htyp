@@ -1,4 +1,4 @@
-import ConvertUtils from "./covert";
+import ConvertUtils from "./convert";
 import MathUtils from "./math";
 import ObjectUtils from "./objects";
 import TypeUtils from "./typeOf";

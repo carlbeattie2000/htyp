@@ -183,8 +183,8 @@ export default class HtypConfig<
   private static stripUndefinedValues<D = any, P extends object = object>(
     config: HtypRequestConfig<D, P>,
   ): Partial<HtypRequestConfig<D, P>> {
-    return Utils.Object.removeUndefinedProperties(
-      Utils.Object.deepClone(config),
+    return Utils.object.removeUndefinedProperties(
+      Utils.object.deepClone(config),
       ["data", "_data"],
     );
   }
@@ -249,6 +249,6 @@ export default class HtypConfig<
   public static clone<D = any, P extends object = object>(
     config: HtypConfig<D, P>,
   ): HtypConfig<D, P> {
-    return new HtypConfig<D, P>(Utils.Object.deepClone(config.toObject()));
+    return new HtypConfig<D, P>(Utils.object.deepClone(config.toObject()));
   }
 }

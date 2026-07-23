@@ -36,7 +36,7 @@ export default class ObjectUtils {
     return obj;
   }
 
-  public static objectValueReplacer<T extends object>(
+  public static valueReplacer<T extends object>(
     obj: T,
     keys: string[],
     replaceWith: string | undefined,
@@ -53,7 +53,7 @@ export default class ObjectUtils {
         });
       } else if (TypeUtils.isObject(clonedObj[keyAsLowercase as keyof T])) {
         Object.defineProperty(clonedObj, keyAsLowercase, {
-          value: this.objectValueReplacer<any>(
+          value: this.valueReplacer<any>(
             clonedObj[keyAsLowercase as keyof T],
             keys,
             replaceWith,

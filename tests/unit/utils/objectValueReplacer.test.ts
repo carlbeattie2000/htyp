@@ -8,7 +8,7 @@ describe("objectValueReplacer", () => {
       foo: "bar",
     };
 
-    const newObj = Utils.object.objectValueReplacer(obj, ["foo"], undefined);
+    const newObj = Utils.object.valueReplacer(obj, ["foo"], undefined);
 
     expect(newObj).toHaveProperty("foo");
 
@@ -22,7 +22,7 @@ describe("objectValueReplacer", () => {
       foo: "bar",
     };
 
-    const newObj = Utils.object.objectValueReplacer(obj, ["foo"], "redacted");
+    const newObj = Utils.object.valueReplacer(obj, ["foo"], "redacted");
 
     expect(newObj.foo).toBe("redacted");
   });
@@ -34,7 +34,7 @@ describe("objectValueReplacer", () => {
       },
     };
 
-    const newObj = Utils.object.objectValueReplacer(obj, ["foo"], undefined);
+    const newObj = Utils.object.valueReplacer(obj, ["foo"], undefined);
     expect(newObj.bar).toBeDefined();
     expect(newObj.bar.foo).toBeUndefined();
   });
@@ -46,7 +46,7 @@ describe("objectValueReplacer", () => {
       },
     };
 
-    const newObj = Utils.object.objectValueReplacer(obj, ["bar"], undefined);
+    const newObj = Utils.object.valueReplacer(obj, ["bar"], undefined);
     expect(newObj.bar).toBeUndefined();
   });
 
@@ -85,7 +85,7 @@ describe("objectValueReplacer", () => {
       },
     };
 
-    const newObj = Utils.object.objectValueReplacer(obj, ["g"], undefined);
+    const newObj = Utils.object.valueReplacer(obj, ["g"], undefined);
 
     expect(newObj.a.b.c.d.e.f.g).toBeUndefined();
 

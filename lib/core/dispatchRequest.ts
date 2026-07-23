@@ -8,6 +8,7 @@ export default async function dispatchRequest<D, P extends object>(
   config: HtypConfig<D, P>,
 ): Promise<InternalHtypResponse> {
   const response = await fetch(config.url, {
+    method: config.method,
     headers: config.headers.toHeaders(),
     body: config._data,
   });

@@ -3,6 +3,7 @@ export interface FetchCapture {
   method?: string;
   body?: unknown;
   headers?: Headers;
+  request?: Request;
 }
 
 export interface RespondWithInit extends ResponseInit {
@@ -40,7 +41,6 @@ export class MockFetch {
       capture.url = url;
       capture.method = init?.method ?? "GET";
       capture.body = init?.body;
-      capture.headers = new Headers(init?.headers);
 
       let stream: ReadableStream<Uint8Array<ArrayBuffer>> | null = null;
 
@@ -50,6 +50,9 @@ export class MockFetch {
       ) {
         stream = stringToReadableStream(this._respondWith.body);
       }
+
+      capture.request = new Request(url, init);
+      capture.headers = new Headers(capture.request.headers);
 
       return new Response(stream, this._respondWith);
     };

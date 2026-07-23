@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import HtypError from "../../lib/core/HtypError";
+import toFormData from "../../lib/helpers/toFormData";
 import htyp from "../../lib/htyp";
 import { MockFetch } from "../mocks/fetch.mock";
 
@@ -205,5 +206,24 @@ describe("requests", () => {
     });
 
     expect(response.config.headers.getContentType()).toBe(contentType);
+  });
+
+  it("should correctly set content-type when request body is FormData", async () => {
+    const obj = {
+      foo: "bar",
+    };
+
+    const response = await htyp.request("/foo", {
+      method: "post",
+      data: toFormData(obj),
+    });
+
+    expect(response.config.headers.has("content-type")).toBe(false);
+
+    expect(
+      capturedFetch.request?.headers
+        .get("content-type")
+        ?.includes("multipart/form-data"),
+    ).toBeTruthy();
   });
 });

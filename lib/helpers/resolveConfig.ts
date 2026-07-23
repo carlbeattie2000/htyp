@@ -7,6 +7,10 @@ import type HtypConfig from "../core/config";
 export default function resolveConfig<D = any, P extends object = object>(
   config: HtypConfig<D, P>,
 ): HtypConfig<D, P> {
+  if (Utils.isFormData(config.data)) {
+    config.headers.delete("content-type");
+  }
+
   const newConfig = config.clone();
 
   newConfig.url = buildURL(
@@ -18,10 +22,6 @@ export default function resolveConfig<D = any, P extends object = object>(
     ),
     newConfig.params,
   );
-
-  if (Utils.isFormData(config.data)) {
-    config.headers.setContentType(undefined);
-  }
 
   return newConfig;
 }

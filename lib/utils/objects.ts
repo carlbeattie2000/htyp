@@ -137,6 +137,14 @@ export default class ObjectUtils {
       return clone as T;
     }
 
+    if (thing instanceof FormData) {
+      const clone = new FormData();
+      thing.forEach((value, key) => {
+        clone.append(key, value);
+      });
+      return clone as T;
+    }
+
     if (Array.isArray(thing)) {
       return thing.map((element): any => {
         if (this.isObject(element)) {

@@ -68,6 +68,8 @@ export interface HtypRequestConfig<D = any, P extends object = object> {
 
   responseValidator?: ResponseValidatorFn<unknown>;
 
+  credentials?: RequestCredentials;
+
   transitional?: Transitionals;
 
   headers?: RawHtypHeaders | HtypHeaders;
@@ -96,11 +98,21 @@ export type InternalHtypRequestConfig<
   P extends object = object,
 > = Omit<
   Required<HtypRequestConfig<D, P>>,
-  "data" | "params" | "redactKeys" | "_data" | "responseValidator"
+  | "data"
+  | "params"
+  | "redactKeys"
+  | "_data"
+  | "responseValidator"
+  | "credentials"
 > &
   Pick<
     HtypRequestConfig<D, P>,
-    "data" | "params" | "redactKeys" | "_data" | "responseValidator"
+    | "data"
+    | "params"
+    | "redactKeys"
+    | "_data"
+    | "responseValidator"
+    | "credentials"
   >;
 
 export type InternalHtypRequestConfigJSON<
@@ -114,6 +126,7 @@ export type InternalHtypRequestConfigJSON<
   | "allowAbsoluteUrls"
   | "data"
   | "params"
+  | "credentials"
   | "transitional"
   | "responseType"
   | "timeout"

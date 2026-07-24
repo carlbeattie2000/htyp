@@ -42,6 +42,8 @@ export default class HtypConfig<
 
   public responseValidator?: ResponseValidatorFn<unknown> | undefined;
 
+  public credentials?: RequestCredentials | undefined;
+
   public transitional: Transitionals;
 
   public headers: HtypHeaders;
@@ -81,6 +83,8 @@ export default class HtypConfig<
 
     this.responseValidator = internalConfig.responseValidator;
 
+    this.credentials = internalConfig.credentials;
+
     this.transitional = internalConfig.transitional;
 
     if (internalConfig.headers instanceof HtypHeaders) {
@@ -118,6 +122,7 @@ export default class HtypConfig<
       method: this.method,
       allowAbsoluteUrls: this.allowAbsoluteUrls,
       data: this.data,
+      credentials: this.credentials,
       transitional: this.transitional,
       headers: this.headers.toJSON(),
       responseType: this.responseType,

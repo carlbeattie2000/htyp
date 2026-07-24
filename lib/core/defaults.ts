@@ -18,6 +18,7 @@ export function createDefaultInternalConfig(): InternalHtypRequestConfig {
     transformRequest: [defaultTransformRequest],
     transformResponse: [defaultTransformResponse],
     responseValidator: undefined,
+    credentials: undefined,
     transitional: {
       silentJSONParsing: false,
       forcedJSONParsing: false,

@@ -171,4 +171,61 @@ export default class ObjectUtils {
       HtypError.ERR_INSTANCE_MISSING_CLONE,
     );
   }
+
+  public static merge<Final>(...targets: unknown[]): Final {
+    if (targets.length === 0) {
+      throw new HtypError("Empty targets array", HtypError.ERR_HTYP);
+    }
+
+    const targetsAreObjects = targets.every(
+      (obj) => TypeUtils.isPlainObject(obj) || TypeUtils.isArray(obj),
+    );
+    const isArrayMerge = Array.isArray(targets[0]);
+    const targetsAreSameType = targets.every((target) => {
+      if (isArrayMerge) {
+        return Array.isArray(target);
+      }
+      return TypeUtils.isPlainObject(target);
+    });
+
+    if (!targetsAreObjects) {
+      throw new HtypError("All targets must be objects", HtypError.ERR_HTYP);
+    }
+
+    if (!targetsAreSameType) {
+      throw new HtypError(
+        "All targets must be of the same type",
+        HtypError.ERR_HTYP,
+      );
+    }
+
+    if (isArrayMerge) {
+      return targets.reduce(
+        (acc, current) => (acc as unknown[]).concat(current),
+        [],
+      ) as Final;
+    }
+
+    const out: Record<string, unknown> = {};
+
+    for (const target of targets) {
+      const targetObject = target as object;
+      for (const key in targetObject) {
+        if (key) {
+          const value = targetObject[key as keyof object];
+
+          if (
+            (TypeUtils.isPlainObject(value) || TypeUtils.isArray(value)) &&
+            key in out
+          ) {
+            out[key] = this.merge(out[key], value);
+          } else {
+            out[key] = value;
+          }
+        }
+      }
+    }
+
+    return out as Final;
+  }
 }

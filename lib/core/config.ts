@@ -46,6 +46,18 @@ export default class HtypConfig<
 
   public mode?: RequestMode | undefined;
 
+  public cache?: RequestCache | undefined;
+
+  public redirect?: RequestRedirect | undefined;
+
+  public keepalive?: boolean | undefined;
+
+  public priority?: RequestPriority | undefined;
+
+  public referrer?: string | undefined;
+
+  public referrerPolicy?: ReferrerPolicy | undefined;
+
   public transitional: Transitionals;
 
   public headers: HtypHeaders;
@@ -87,6 +99,20 @@ export default class HtypConfig<
 
     this.credentials = internalConfig.credentials;
 
+    this.mode = internalConfig.mode;
+
+    this.cache = internalConfig.cache;
+
+    this.redirect = internalConfig.redirect;
+
+    this.keepalive = internalConfig.keepalive;
+
+    this.priority = internalConfig.priority;
+
+    this.referrer = internalConfig.referrer;
+
+    this.referrerPolicy = internalConfig.referrerPolicy;
+
     this.transitional = internalConfig.transitional;
 
     if (internalConfig.headers instanceof HtypHeaders) {
@@ -126,6 +152,12 @@ export default class HtypConfig<
       data: this.data,
       credentials: this.credentials,
       mode: this.mode,
+      cache: this.cache,
+      redirect: this.redirect,
+      keepalive: this.keepalive,
+      priority: this.priority,
+      referrer: this.referrer,
+      referrerPolicy: this.referrerPolicy,
       transitional: this.transitional,
       headers: this.headers.toJSON(),
       responseType: this.responseType,

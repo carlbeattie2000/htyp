@@ -49,7 +49,19 @@ export interface Transitionals {
   forcedJSONParsing: boolean;
 }
 
-export interface HtypRequestConfig<D = any, P extends object = object> {
+type InternalFetchRequestInitProperties = Pick<
+  RequestInit,
+  | "credentials"
+  | "mode"
+  | "cache"
+  | "redirect"
+  | "keepalive"
+  | "priority"
+  | "referrer"
+  | "referrerPolicy"
+>;
+
+export type HtypRequestConfig<D = any, P extends object = object> = {
   baseUrl?: string;
 
   url?: string;
@@ -67,10 +79,6 @@ export interface HtypRequestConfig<D = any, P extends object = object> {
   transformResponse?: TransformResponseFn[];
 
   responseValidator?: ResponseValidatorFn<unknown>;
-
-  credentials?: RequestCredentials;
-
-  mode?: RequestMode;
 
   transitional?: Transitionals;
 
@@ -93,7 +101,7 @@ export interface HtypRequestConfig<D = any, P extends object = object> {
   _retryCount?: number;
 
   _data?: RequestTransformFinalResult;
-}
+} & InternalFetchRequestInitProperties;
 
 export type InternalHtypRequestConfig<
   D = any,
@@ -105,8 +113,7 @@ export type InternalHtypRequestConfig<
   | "redactKeys"
   | "_data"
   | "responseValidator"
-  | "credentials"
-  | "mode"
+  | keyof InternalFetchRequestInitProperties
 > &
   Pick<
     HtypRequestConfig<D, P>,
@@ -115,8 +122,7 @@ export type InternalHtypRequestConfig<
     | "redactKeys"
     | "_data"
     | "responseValidator"
-    | "credentials"
-    | "mode"
+    | keyof InternalFetchRequestInitProperties
   >;
 
 export type InternalHtypRequestConfigJSON<
@@ -130,8 +136,6 @@ export type InternalHtypRequestConfigJSON<
   | "allowAbsoluteUrls"
   | "data"
   | "params"
-  | "credentials"
-  | "mode"
   | "transitional"
   | "responseType"
   | "timeout"
@@ -142,6 +146,7 @@ export type InternalHtypRequestConfigJSON<
   | "_retry"
   | "_retryCount"
   | "_data"
+  | keyof InternalFetchRequestInitProperties
 > & {
   headers: RawHtypHeaders;
 };

@@ -13,6 +13,12 @@ export default async function dispatchRequest<D, P extends object>(
     body: config._data,
     credentials: config.credentials,
     mode: config.mode,
+    cache: config.cache,
+    redirect: config.redirect,
+    keepalive: config.keepalive,
+    priority: config.priority,
+    referrer: config.referrer,
+    referrerPolicy: config.referrerPolicy,
   });
 
   let data: AcceptedResponseTransformerTypes = null;

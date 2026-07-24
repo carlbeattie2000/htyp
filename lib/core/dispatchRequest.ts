@@ -12,6 +12,7 @@ export default async function dispatchRequest<D, P extends object>(
     headers: config.headers.toHeaders(),
     body: config._data,
     credentials: config.credentials,
+    mode: config.mode,
   });
 
   let data: AcceptedResponseTransformerTypes = null;

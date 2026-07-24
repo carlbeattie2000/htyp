@@ -70,6 +70,8 @@ export interface HtypRequestConfig<D = any, P extends object = object> {
 
   credentials?: RequestCredentials;
 
+  mode?: RequestMode;
+
   transitional?: Transitionals;
 
   headers?: RawHtypHeaders | HtypHeaders;
@@ -104,6 +106,7 @@ export type InternalHtypRequestConfig<
   | "_data"
   | "responseValidator"
   | "credentials"
+  | "mode"
 > &
   Pick<
     HtypRequestConfig<D, P>,
@@ -113,6 +116,7 @@ export type InternalHtypRequestConfig<
     | "_data"
     | "responseValidator"
     | "credentials"
+    | "mode"
   >;
 
 export type InternalHtypRequestConfigJSON<
@@ -127,6 +131,7 @@ export type InternalHtypRequestConfigJSON<
   | "data"
   | "params"
   | "credentials"
+  | "mode"
   | "transitional"
   | "responseType"
   | "timeout"

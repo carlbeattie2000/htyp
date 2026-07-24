@@ -44,6 +44,8 @@ export default class HtypConfig<
 
   public credentials?: RequestCredentials | undefined;
 
+  public mode?: RequestMode | undefined;
+
   public transitional: Transitionals;
 
   public headers: HtypHeaders;
@@ -123,6 +125,7 @@ export default class HtypConfig<
       allowAbsoluteUrls: this.allowAbsoluteUrls,
       data: this.data,
       credentials: this.credentials,
+      mode: this.mode,
       transitional: this.transitional,
       headers: this.headers.toJSON(),
       responseType: this.responseType,

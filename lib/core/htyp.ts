@@ -1,4 +1,3 @@
-import HtypConfig from "./config";
 import dispatchRequest from "./dispatchRequest";
 import Interceptor from "./interceptors";
 import { requestShouldRetry } from "./retries";
@@ -7,9 +6,12 @@ import buildRequestConfig from "../helpers/buildRequestConfig";
 import resolveConfig from "../helpers/resolveConfig";
 import Utils from "../utils";
 
+import type HtypConfig from "./config";
 import type { HtypResponse } from "../types";
-import type { AcceptedResponseTransformerTypes } from "./config/config.type";
-import type { HtypRequestConfig } from "../types/config";
+import type {
+  AcceptedResponseTransformerTypes,
+  HtypRequestConfig,
+} from "../types/config";
 import type { HtypI } from "../types/Htyp";
 import type {
   RequestInterceptorFns,
@@ -17,7 +19,7 @@ import type {
 } from "../types/interceptors";
 
 export default class Htyp implements HtypI {
-  public defaults: HtypConfig;
+  public defaults?: HtypRequestConfig;
 
   public interceptors: {
     request: Interceptor<RequestInterceptorFns>;
@@ -25,11 +27,7 @@ export default class Htyp implements HtypI {
   };
 
   public constructor(config?: HtypRequestConfig) {
-    if (config) {
-      this.defaults = HtypConfig.merge(HtypConfig.defaults, config);
-    } else {
-      this.defaults = HtypConfig.createDefaults;
-    }
+    this.defaults = config;
 
     this.interceptors = Interceptor.newRequestAndResponseInterceptors();
   }
@@ -42,7 +40,7 @@ export default class Htyp implements HtypI {
     input: string | HtypRequestConfig<D, P>,
     config?: HtypRequestConfig<D, P>,
   ): Promise<HtypResponse<T, D, object, P>> {
-    let requestConfig = buildRequestConfig(this.defaults, input, config);
+    let requestConfig = buildRequestConfig(input, config, this.defaults);
 
     for (const interceptor of this.interceptors.request.interceptors) {
       let interceptorResult = interceptor(requestConfig);

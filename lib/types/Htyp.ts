@@ -5,7 +5,6 @@ import type {
   RequestInterceptorFns,
   ResponseInterceptorFns,
 } from "./interceptors";
-import type HtypConfig from "../core/config";
 
 type RequestFn = <T = any, D = any, P extends object = object>(
   input: string | HtypRequestConfig<D, P>,
@@ -13,7 +12,7 @@ type RequestFn = <T = any, D = any, P extends object = object>(
 ) => Promise<HtypResponse<T, D, object, P>>;
 
 export interface HtypI {
-  defaults: HtypConfig;
+  defaults?: HtypRequestConfig;
 
   interceptors: {
     request: Interceptor<RequestInterceptorFns>;
@@ -23,4 +22,16 @@ export interface HtypI {
   create: (config?: HtypRequestConfig) => HtypI;
 
   request: RequestFn;
+
+  get: RequestFn;
+
+  post: RequestFn;
+
+  put: RequestFn;
+
+  patch: RequestFn;
+
+  delete: RequestFn;
+
+  head: RequestFn;
 }

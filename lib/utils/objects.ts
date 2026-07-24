@@ -216,7 +216,8 @@ export default class ObjectUtils {
 
           if (
             (TypeUtils.isPlainObject(value) || TypeUtils.isArray(value)) &&
-            key in out
+            key in out &&
+            (TypeUtils.isPlainObject(out[key]) || TypeUtils.isArray(out[key]))
           ) {
             out[key] = this.merge(out[key], value);
           } else {

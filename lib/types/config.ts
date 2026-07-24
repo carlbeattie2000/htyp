@@ -1,9 +1,4 @@
-import type {
-  RequestTransformFinalResult,
-  RequestTransforms,
-  ResponseValidatorFn,
-  TransformResponseFn,
-} from "../core/config/config.type";
+import type HtypConfig from "../core/config";
 import type HtypHeaders from "../core/headers";
 import type {
   HttpVersion,
@@ -13,6 +8,41 @@ import type {
 } from "../types";
 import type { RawHtypHeaders } from "./htypHeaders";
 import type { RetryPolicy } from "./retry";
+
+export type TransformRequestFn<T> = (data: T, headers: HtypHeaders) => T;
+
+export type RequestTransformFinalResult =
+  string | ArrayBuffer | FormData | ReadableStream | Blob | null;
+
+export type TransformRequestFinalFn<T> = (
+  data: T,
+  headers: HtypHeaders,
+) => RequestTransformFinalResult;
+
+export type RequestTransforms<T> = [
+  ...TransformRequestFn<T>[],
+  TransformRequestFinalFn<T>,
+];
+
+export type JsonValue =
+  string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
+
+export type AcceptedResponseTransformerTypes =
+  | ReadableStream<Uint8Array<ArrayBuffer>>
+  | ArrayBuffer
+  | Blob
+  | Uint8Array
+  | string
+  | FormData
+  | JsonValue
+  | null;
+
+export type TransformResponseFn = (
+  this: HtypConfig,
+  data: AcceptedResponseTransformerTypes,
+) => AcceptedResponseTransformerTypes;
+
+export type ResponseValidatorFn<T> = (data: T) => asserts data is T;
 
 export interface Transitionals {
   silentJSONParsing: boolean;
@@ -72,3 +102,34 @@ export type InternalHtypRequestConfig<
     HtypRequestConfig<D, P>,
     "data" | "params" | "redactKeys" | "_data" | "responseValidator"
   >;
+
+export type InternalHtypRequestConfigJSON<
+  D = any,
+  P extends object = object,
+> = Pick<
+  InternalHtypRequestConfig<D, P>,
+  | "baseUrl"
+  | "url"
+  | "method"
+  | "allowAbsoluteUrls"
+  | "data"
+  | "params"
+  | "transitional"
+  | "responseType"
+  | "timeout"
+  | "retry"
+  | "retryPolicy"
+  | "httpVersion"
+  | "redactKeys"
+  | "_retry"
+  | "_retryCount"
+  | "_data"
+> & {
+  headers: RawHtypHeaders;
+};
+
+export type AnyRequestConfig =
+  | HtypConfig
+  | InternalHtypRequestConfig
+  | InternalHtypRequestConfigJSON
+  | HtypRequestConfig;

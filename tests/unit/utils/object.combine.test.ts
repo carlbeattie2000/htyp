@@ -184,4 +184,59 @@ describe("ObjectUtils::merge", () => {
       title: "mr",
     });
   });
+
+  it("should combine methods", () => {
+    const fn = () => "foo";
+
+    const obj = { foo: "bar" };
+    const objExtended = { bar: fn };
+
+    const combined = ObjectUtils.merge(obj, objExtended);
+
+    expect(combined).toEqual({
+      foo: "bar",
+      bar: fn,
+    });
+  });
+
+  it("should combine when object has array of methods", () => {
+    const foo = () => "foo";
+    const bar = () => "foo";
+
+    const obj = { foo: "bar" };
+    const objExtended = { methods: [foo, bar] };
+
+    const combined = ObjectUtils.merge(obj, objExtended);
+
+    expect(combined).toEqual({
+      foo: "bar",
+      methods: [foo, bar],
+    });
+  });
+
+  it("empty object should not alter output", () => {
+    const obj = { foo: "bar" };
+    const objExtended = { bar: "foo" };
+
+    const combined = ObjectUtils.merge(obj, {}, objExtended);
+
+    expect(combined).toEqual({
+      foo: "bar",
+      bar: "foo",
+    });
+  });
+
+  it("should not attempt to deeply merge when existing value is not a object", () => {
+    const obj = { foo: "bar", bar: undefined };
+    const objExtended = { bar: { foo: "bar" } };
+
+    const combined = ObjectUtils.merge(obj, {}, objExtended);
+
+    expect(combined).toEqual({
+      foo: "bar",
+      bar: {
+        foo: "bar",
+      },
+    });
+  });
 });

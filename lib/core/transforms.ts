@@ -2,12 +2,12 @@ import Utils from "../utils";
 import HtypError from "./HtypError";
 
 import type HtypConfig from "./config";
+import type HtypHeaders from "./headers";
 import type {
   AcceptedResponseTransformerTypes,
   JsonValue,
   RequestTransformFinalResult,
-} from "./config/config.type";
-import type HtypHeaders from "./headers";
+} from "../types/config";
 
 export function defaultTransformRequest<T>(
   data: T,

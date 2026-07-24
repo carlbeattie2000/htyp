@@ -1,4 +1,4 @@
-import Htyp from "./core/htyp";
+import Htyp from "./core/Htyp";
 
 const htyp = new Htyp();
 

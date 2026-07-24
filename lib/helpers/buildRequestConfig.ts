@@ -1,14 +1,15 @@
-import mergeConfigs from "./mergeConfig";
 import HtypConfig from "../core/config";
+import createDefaultConfig from "../core/defaults";
 import { transformRequestData } from "../core/transforms";
 
 import type { HtypRequestConfig } from "../types/config";
 
 export default function buildRequestConfig<D = any, P extends object = object>(
-  instanceConfig: HtypConfig,
   input: string | HtypRequestConfig<D, P>,
   config?: HtypRequestConfig<D, P>,
+  instanceConfig?: HtypRequestConfig,
 ): HtypConfig<D, P> {
+  const defaultConfig = createDefaultConfig();
   let requestConfig: HtypRequestConfig<D, P> = {};
 
   const inputIsString = typeof input === "string";
@@ -25,9 +26,9 @@ export default function buildRequestConfig<D = any, P extends object = object>(
     };
   }
 
-  const mergedConfig = mergeConfigs(
-    HtypConfig.defaults,
-    instanceConfig,
+  const mergedConfig = HtypConfig.merge<D, P>(
+    defaultConfig,
+    instanceConfig ?? {},
     requestConfig,
   );
 

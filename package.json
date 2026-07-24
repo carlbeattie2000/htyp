@@ -16,12 +16,14 @@
   ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
+    "type": "tsc --noEmit -p tsconfig.build.json",
     "vitest": "vitest",
     "vitest-headless": "vitest --browser.headless",
     "lint": "eslint",
     "lint-fix": "eslint --fix",
     "prettier": "prettier -c ./lib ./tests",
-    "prettier-write": "prettier --write ./lib ./tests"
+    "prettier-write": "prettier --write ./lib ./tests",
+    "commit-prepare": "pnpm type && pnpm lint && pnpm prettier && pnpm vitest-headless"
   },
   "type": "module",
   "keywords": [],

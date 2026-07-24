@@ -1,6 +1,6 @@
 import type HtypConfig from "./core/config";
-import type { AcceptedResponseTransformerTypes } from "./core/config/config.type";
 import type HtypHeaders from "./core/headers";
+import type { AcceptedResponseTransformerTypes } from "./types/config";
 
 export type WithRequired<T, K extends keyof T> = T & Required<Pick<T, K>>;
 

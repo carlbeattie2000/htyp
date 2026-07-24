@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import HtypError from "../../../lib/core/HtypError";
 import ObjectUtils from "../../../lib/utils/objects";
 
 describe("ObjectUtils::removeUndefinedProperties", () => {
@@ -201,5 +202,139 @@ describe("ObjectUtils::deepClone", () => {
     expect(clonedInstance).not.toBe(instance);
     expect(clonedInstance.friendAges).not.toBe(instance.friendAges);
     expect(clonedInstance).toBeInstanceOf(Person);
+  });
+
+  it("should detect when .clone method on class delgates the clone back to this", () => {
+    class ClassWithBadClone {
+      public foo: string;
+
+      constructor(foo: string) {
+        this.foo = foo;
+      }
+
+      public clone() {
+        return ObjectUtils.deepClone(this);
+      }
+    }
+
+    let error: HtypError | null = null;
+
+    try {
+      ObjectUtils.deepClone(new ClassWithBadClone("bar"));
+    } catch (err: unknown) {
+      expect(err).toBeInstanceOf(HtypError);
+      if (err instanceof HtypError) {
+        error = err;
+      }
+    }
+
+    expect(error).not.toBeNull();
+    expect(error?.message).toEqual(
+      ".clone() on a instance must not call deepClone on itself",
+    );
+  });
+
+  it("should allow .clone methods to call deepClone on instance properties", () => {
+    class ClassWithGoodClone {
+      public foo: string;
+
+      public bar: { foo: string };
+
+      constructor(foo: string, bar: { foo: string }) {
+        this.foo = foo;
+
+        this.bar = bar;
+      }
+
+      public clone() {
+        return new ClassWithGoodClone(
+          this.foo,
+          ObjectUtils.deepClone(this.bar),
+        );
+      }
+    }
+
+    expect(() => {
+      const clonedObj = ObjectUtils.deepClone(
+        new ClassWithGoodClone("bar", { foo: "bar" }),
+      );
+
+      expect(clonedObj.foo).toEqual("bar");
+      expect(clonedObj.bar).toEqual({ foo: "bar" });
+    }).not.toThrow();
+  });
+
+  it("should clone a singly linked list", () => {
+    class Node {
+      value: number;
+
+      next: Node | null;
+
+      constructor(value: number, next?: Node) {
+        this.value = value;
+
+        this.next = next ?? null;
+      }
+
+      public clone() {
+        if (this.next !== null) {
+          return new Node(this.value, ObjectUtils.deepClone(this.next));
+        }
+        return new Node(this.value);
+      }
+    }
+
+    class SinglyLinkedList {
+      head: Node | null;
+
+      constructor(head?: Node) {
+        this.head = head ?? null;
+      }
+
+      public add(value: number) {
+        if (this.head === null) {
+          this.head = new Node(value);
+        } else {
+          let current = this.head;
+
+          while (current.next !== null) {
+            current = current.next;
+          }
+
+          current.next = new Node(value);
+        }
+      }
+
+      public clone() {
+        const { head } = this;
+        const clonedHead = ObjectUtils.deepClone(head);
+        if (clonedHead) {
+          return new SinglyLinkedList(clonedHead);
+        }
+        throw new Error("Failed to clone SinglyLinkedList");
+      }
+    }
+
+    const singlyLinkedList = new SinglyLinkedList();
+    singlyLinkedList.add(1);
+    singlyLinkedList.add(2);
+    singlyLinkedList.add(3);
+
+    expect(JSON.stringify(singlyLinkedList.head)).toEqual(
+      JSON.stringify({
+        value: 1,
+        next: {
+          value: 2,
+          next: {
+            value: 3,
+            next: null,
+          },
+        },
+      }),
+    );
+
+    const clonedSinglyLinkedList = ObjectUtils.deepClone(singlyLinkedList);
+
+    expect(clonedSinglyLinkedList).toEqual(singlyLinkedList);
   });
 });

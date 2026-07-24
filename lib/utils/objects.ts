@@ -113,6 +113,10 @@ export default class ObjectUtils {
     return clone as T;
   }
 
+  private static activeCloneClass = new WeakMap<object, number>();
+
+  private static activeCloneClassIdCounter = 0;
+
   public static deepClone<T>(thing: T): T {
     if (!TypeUtils.isObject(thing)) {
       return thing;
@@ -160,14 +164,29 @@ export default class ObjectUtils {
       return newObj as T;
     }
 
+    const className = thing.constructor.name;
+
     if (TypeUtils.isObject(thing)) {
+      if (this.activeCloneClass.has(thing)) {
+        throw new HtypError(
+          ".clone() on a instance must not call deepClone on itself",
+        );
+      }
+
       if ("clone" in thing && typeof thing.clone === "function") {
-        return thing.clone() as T;
+        this.activeCloneClass.set(thing, this.activeCloneClassIdCounter);
+        this.activeCloneClassIdCounter += 1;
+
+        const clonedClass = thing.clone() as T;
+
+        this.activeCloneClass.delete(thing);
+
+        return clonedClass;
       }
     }
 
     throw new HtypError(
-      `${toString.call(thing)} does not have a clone method`,
+      `${className} does not have a clone method`,
       HtypError.ERR_INSTANCE_MISSING_CLONE,
     );
   }

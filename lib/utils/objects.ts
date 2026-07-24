@@ -113,9 +113,7 @@ export default class ObjectUtils {
     return clone as T;
   }
 
-  private static activeCloneClass = new WeakMap<object, number>();
-
-  private static activeCloneClassIdCounter = 0;
+  private static activeInstancesBeingCloned = new WeakSet<object>();
 
   public static deepClone<T>(thing: T): T {
     if (!TypeUtils.isObject(thing)) {
@@ -167,21 +165,26 @@ export default class ObjectUtils {
     const className = thing.constructor.name;
 
     if (TypeUtils.isObject(thing)) {
-      if (this.activeCloneClass.has(thing)) {
+      if (this.activeInstancesBeingCloned.has(thing)) {
         throw new HtypError(
           ".clone() on a instance must not call deepClone on itself",
         );
       }
 
       if ("clone" in thing && typeof thing.clone === "function") {
-        this.activeCloneClass.set(thing, this.activeCloneClassIdCounter);
-        this.activeCloneClassIdCounter += 1;
+        this.activeInstancesBeingCloned.add(thing);
 
-        const clonedClass = thing.clone() as T;
+        try {
+          const clonedClass = thing.clone() as T;
 
-        this.activeCloneClass.delete(thing);
+          this.activeInstancesBeingCloned.delete(thing);
 
-        return clonedClass;
+          return clonedClass;
+        } catch (e) {
+          this.activeInstancesBeingCloned.delete(thing);
+
+          throw e;
+        }
       }
     }
 

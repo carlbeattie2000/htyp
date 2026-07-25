@@ -1,8 +1,9 @@
 import TypeUtils from "../utils/typeOf";
 
 import type HtypConfig from "./config";
-import type { EnumOrString, HtypResponse } from "../types";
+import type { EnumOrString } from "../types";
 import type { InternalHtypRequestConfigJSON } from "../types/config";
+import type { HtypResponse } from "../types/response";
 
 enum HtypErrorCodes {
   ERR_INVALID_URL = "ERR_INVALID_URL",
@@ -23,6 +24,7 @@ export default class HtypError<
   T = unknown,
   D = any,
   P extends object = object,
+  E = any,
 > extends Error {
   public readonly _brand = "HtypError";
 
@@ -32,7 +34,7 @@ export default class HtypError<
 
   public request?: unknown;
 
-  public response?: HtypResponse<T, D, object, P>;
+  public response?: HtypResponse<D, P, T, E>;
 
   public status?: number;
 
@@ -41,7 +43,7 @@ export default class HtypError<
     code?: EnumOrString<HtypErrorCodes>,
     config?: HtypConfig<D, P>,
     request?: unknown,
-    response?: HtypResponse<T, D, object, P>,
+    response?: HtypResponse<D, P, T, E>,
   ) {
     super(message);
 
@@ -65,7 +67,7 @@ export default class HtypError<
     code?: EnumOrString<HtypErrorCodes>,
     config?: HtypConfig<D, P>,
     request?: unknown,
-    response?: HtypResponse<T, D, object, P>,
+    response?: HtypResponse<D, P, T>,
   ): HtypError<T, D, P> {
     if (TypeUtils.isHtypError(error)) {
       return new HtypError(

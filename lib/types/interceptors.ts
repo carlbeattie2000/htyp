@@ -1,5 +1,5 @@
+import type { InternalHtypResponse } from "./response";
 import type HtypConfig from "../core/config";
-import type { HtypResponse } from "../types";
 
 export type RequestInterceptorFnSync = (config: HtypConfig) => HtypConfig;
 export type RequestInterceptorFnAsync = (
@@ -9,10 +9,10 @@ export type RequestInterceptorFns =
   RequestInterceptorFnSync | RequestInterceptorFnAsync;
 
 export type ResponseInterceptorFnSync = (
-  response: HtypResponse,
-) => HtypResponse;
+  response: InternalHtypResponse,
+) => InternalHtypResponse;
 export type ResponseInterceptorFnAsync = (
-  response: HtypResponse,
-) => Promise<HtypResponse>;
+  response: InternalHtypResponse,
+) => Promise<InternalHtypResponse>;
 export type ResponseInterceptorFns =
   ResponseInterceptorFnSync | ResponseInterceptorFnAsync;

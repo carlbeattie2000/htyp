@@ -3,11 +3,8 @@ import Utils from "../utils";
 import HtypHeaders from "./headers";
 
 import type HtypConfig from "./config";
-import type {
-  InternalHtypResponse,
-  Method,
-  StringLiteralOrString,
-} from "../types";
+import type { Method, StringLiteralOrString } from "../types";
+import type { InternalHtypResponse } from "../types/response";
 import type {
   DecorrelatedJitterPolicy,
   ExponentialBackoffPlusEqualJitterPolicy,

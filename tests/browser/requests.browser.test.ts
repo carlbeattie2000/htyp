@@ -426,4 +426,17 @@ describe("requests", () => {
       }),
     ).rejects.toThrow();
   });
+
+  it("should allow typing of error respone", async () => {
+    interface ErrorResponse {
+      error: boolean;
+      message: string;
+    }
+
+    const response = await htyp.request<any, any, object, ErrorResponse>(
+      "/foo",
+    );
+
+    expect(response.status).toEqual(200);
+  });
 });

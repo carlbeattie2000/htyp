@@ -1,7 +1,3 @@
-import type HtypConfig from "./core/config";
-import type HtypHeaders from "./core/headers";
-import type { AcceptedResponseTransformerTypes } from "./types/config";
-
 export type WithRequired<T, K extends keyof T> = T & Required<Pick<T, K>>;
 
 export type StringLiteralOrString<Literals extends string> =
@@ -34,37 +30,3 @@ export type ResponseEncoding = (
 ) & {};
 
 export type HttpVersion = 1 | 2;
-
-export interface InternalHtypResponse {
-  status: number;
-  statusText: string;
-  headers: HtypHeaders;
-  data: AcceptedResponseTransformerTypes;
-  raw: Response;
-}
-
-interface BaseHtypResponse<D = any, H = object, P extends object = object> {
-  status: number;
-  statusText: string;
-  headers: H & HtypHeaders;
-  config: HtypConfig<D, P>;
-}
-
-export type HtypResponse<
-  T = any,
-  D = any,
-  H = object,
-  P extends object = object,
-> =
-  | (BaseHtypResponse<D, H, P> & {
-      validated: false;
-      data: T | null;
-    })
-  | (BaseHtypResponse<D, H, P> & {
-      validated: true;
-      data: T;
-    });
-
-export type RequestFn = <T, B = any>(
-  config: HtypConfig<B>,
-) => Promise<HtypResponse<T | null, B>>;

@@ -1,15 +1,15 @@
-import type Interceptor from "../core/interceptors";
-import type { HtypResponse } from "../types";
 import type { HtypRequestConfig } from "./config";
 import type {
   RequestInterceptorFns,
   ResponseInterceptorFns,
 } from "./interceptors";
+import type { HtypResponse } from "./response";
+import type Interceptor from "../core/interceptors";
 
-type RequestFn = <T = any, D = any, P extends object = object>(
+type RequestFn = <T = any, D = any, P extends object = object, E = any>(
   input: string | HtypRequestConfig<D, P>,
   config?: HtypRequestConfig<D, P>,
-) => Promise<HtypResponse<T, D, object, P>>;
+) => Promise<HtypResponse<D, P, T, E>>;
 
 export interface HtypI {
   defaults?: HtypRequestConfig;

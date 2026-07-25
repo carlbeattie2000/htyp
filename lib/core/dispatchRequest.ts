@@ -1,8 +1,8 @@
 import HtypHeaders from "./headers";
 
-import type { InternalHtypResponse } from "../types";
 import type HtypConfig from "./config";
 import type { AcceptedResponseTransformerTypes } from "../types/config";
+import type { InternalHtypResponse } from "../types/response";
 
 export default async function dispatchRequest<D, P extends object>(
   config: HtypConfig<D, P>,

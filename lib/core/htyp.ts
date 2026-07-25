@@ -6,8 +6,8 @@ import buildRequestConfig from "../helpers/buildRequestConfig";
 import resolveConfig from "../helpers/resolveConfig";
 import Utils from "../utils";
 
+import type { Method } from "../types";
 import type HtypConfig from "./config";
-import type { HtypResponse } from "../types";
 import type {
   AcceptedResponseTransformerTypes,
   HtypRequestConfig,
@@ -17,6 +17,7 @@ import type {
   RequestInterceptorFns,
   ResponseInterceptorFns,
 } from "../types/interceptors";
+import type { HtypResponse } from "../types/response";
 
 export default class Htyp implements HtypI {
   public defaults?: HtypRequestConfig;
@@ -36,10 +37,10 @@ export default class Htyp implements HtypI {
     return new Htyp(config);
   }
 
-  public async request<T = any, D = any, P extends object = object>(
+  public async request<T = any, D = any, P extends object = object, E = any>(
     input: string | HtypRequestConfig<D, P>,
     config?: HtypRequestConfig<D, P>,
-  ): Promise<HtypResponse<T, D, object, P>> {
+  ): Promise<HtypResponse<D, P, T, E>> {
     let requestConfig = buildRequestConfig(input, config, this.defaults);
 
     for (const interceptor of this.interceptors.request.interceptors) {
@@ -54,7 +55,7 @@ export default class Htyp implements HtypI {
 
     const resolvedConfig = resolveConfig(requestConfig);
 
-    const dispatchedRequestResponse = await dispatchRequest(resolvedConfig);
+    let dispatchedRequestResponse = await dispatchRequest(resolvedConfig);
 
     if (requestShouldRetry(resolvedConfig, dispatchedRequestResponse)) {
       resolvedConfig._retry = true;
@@ -74,7 +75,18 @@ export default class Htyp implements HtypI {
       return this.request(resolvedConfig);
     }
 
-    let response: HtypResponse<T, D, object, P> = {
+    for (const interceptor of this.interceptors.response.interceptors) {
+      let interceptorResult = interceptor(dispatchedRequestResponse);
+
+      if (Utils.type.isThenable(interceptorResult)) {
+        interceptorResult = await interceptorResult;
+      }
+
+      dispatchedRequestResponse = interceptorResult;
+    }
+
+    let response: HtypResponse<D, P, T, E> = {
+      error: false,
       config: requestConfig,
       status: dispatchedRequestResponse.status,
       statusText: dispatchedRequestResponse.statusText,
@@ -84,18 +96,9 @@ export default class Htyp implements HtypI {
         [AcceptedResponseTransformerTypes],
         T | null
       >(resolvedConfig, dispatchedRequestResponse.data),
+      response: dispatchedRequestResponse.raw,
       validated: false,
     };
-
-    for (const interceptor of this.interceptors.response.interceptors) {
-      let interceptorResult = interceptor(response);
-
-      if (Utils.type.isThenable(interceptorResult)) {
-        interceptorResult = await interceptorResult;
-      }
-
-      response = interceptorResult as HtypResponse<T, D, object, P>;
-    }
 
     if (resolvedConfig.responseValidator) {
       const clonedData = Utils.object.deepClone(response.data);
@@ -103,111 +106,46 @@ export default class Htyp implements HtypI {
 
       responseValidator.call(null, clonedData);
 
-      response.validated = true;
+      response = {
+        ...response,
+        data: response.data as T,
+        validated: true,
+      };
     }
 
     return response;
   }
 
-  public async get<T = any, D = any, P extends object = object>(
-    input: string | HtypRequestConfig<D, P>,
-    config?: HtypRequestConfig<D, P>,
-  ): Promise<HtypResponse<T, D, object, P>> {
-    return this.request(input, config);
+  private createMethodRequest(method: Method) {
+    return async <T = any, D = any, P extends object = object, E = any>(
+      input: string | HtypRequestConfig<D, P>,
+      config?: HtypRequestConfig<D, P>,
+    ): Promise<HtypResponse<D, P, T, E>> => {
+      if (typeof input !== "string") {
+        input = {
+          method,
+          ...input,
+        };
+      } else {
+        config = {
+          method,
+          ...config,
+        };
+      }
+
+      return this.request<T, D, P, E>(input, config);
+    };
   }
 
-  public async post<T = any, D = any, P extends object = object>(
-    input: string | HtypRequestConfig<D, P>,
-    config?: HtypRequestConfig<D, P>,
-  ): Promise<HtypResponse<T, D, object, P>> {
-    if (typeof input !== "string") {
-      input = {
-        method: "post",
-        ...input,
-      };
-    } else {
-      config = {
-        method: "post",
-        ...config,
-      };
-    }
+  public get = this.createMethodRequest("get");
 
-    return this.request(input, config);
-  }
+  public post = this.createMethodRequest("post");
 
-  public async put<T = any, D = any, P extends object = object>(
-    input: string | HtypRequestConfig<D, P>,
-    config?: HtypRequestConfig<D, P>,
-  ): Promise<HtypResponse<T, D, object, P>> {
-    if (typeof input !== "string") {
-      input = {
-        method: "put",
-        ...input,
-      };
-    } else {
-      config = {
-        method: "put",
-        ...config,
-      };
-    }
+  public put = this.createMethodRequest("put");
 
-    return this.request(input, config);
-  }
+  public patch = this.createMethodRequest("patch");
 
-  public async patch<T = any, D = any, P extends object = object>(
-    input: string | HtypRequestConfig<D, P>,
-    config?: HtypRequestConfig<D, P>,
-  ): Promise<HtypResponse<T, D, object, P>> {
-    if (typeof input !== "string") {
-      input = {
-        method: "patch",
-        ...input,
-      };
-    } else {
-      config = {
-        method: "patch",
-        ...config,
-      };
-    }
+  public delete = this.createMethodRequest("delete");
 
-    return this.request(input, config);
-  }
-
-  public async delete<T = any, D = any, P extends object = object>(
-    input: string | HtypRequestConfig<D, P>,
-    config?: HtypRequestConfig<D, P>,
-  ): Promise<HtypResponse<T, D, object, P>> {
-    if (typeof input !== "string") {
-      input = {
-        method: "delete",
-        ...input,
-      };
-    } else {
-      config = {
-        method: "delete",
-        ...config,
-      };
-    }
-
-    return this.request(input, config);
-  }
-
-  public async head<T = any, D = any, P extends object = object>(
-    input: string | HtypRequestConfig<D, P>,
-    config?: HtypRequestConfig<D, P>,
-  ): Promise<HtypResponse<T, D, object, P>> {
-    if (typeof input !== "string") {
-      input = {
-        method: "head",
-        ...input,
-      };
-    } else {
-      config = {
-        method: "head",
-        ...config,
-      };
-    }
-
-    return this.request(input, config);
-  }
+  public head = this.createMethodRequest("head");
 }

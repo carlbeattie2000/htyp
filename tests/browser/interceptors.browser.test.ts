@@ -157,7 +157,9 @@ describe("interceptors", () => {
       return response;
     });
 
-    const response = await instance.request("/foo");
+    const response = await instance.request("/foo", {
+      responseType: "text",
+    });
 
     expect(response.data).toBe("intercepted");
   });
@@ -175,7 +177,9 @@ describe("interceptors", () => {
       return response;
     });
 
-    const response = await instance.request("/foo");
+    const response = await instance.request("/foo", {
+      responseType: "text",
+    });
 
     expect(response.data).toBe("intercepted");
   });
@@ -198,7 +202,9 @@ describe("interceptors", () => {
       return response;
     });
 
-    const response = await instance.request("/foo");
+    const response = await instance.request("/foo", {
+      responseType: "text",
+    });
 
     expect(response.data).toBe("intercepted asynchronously and synchronously");
   });
@@ -223,7 +229,9 @@ describe("interceptors", () => {
 
     instance.interceptors.response.eject(interceptor);
 
-    const response = await instance.request("/foo");
+    const response = await instance.request("/foo", {
+      responseType: "text",
+    });
 
     expect(response.data).toBe("intercepted synchronously");
   });
@@ -248,7 +256,9 @@ describe("interceptors", () => {
 
     instance.interceptors.response.clear();
 
-    const response = await instance.request("/foo");
+    const response = await instance.request("/foo", {
+      responseType: "text",
+    });
 
     expect(response.data).toBe(null);
   });

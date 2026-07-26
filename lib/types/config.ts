@@ -45,9 +45,9 @@ export type TransformResponseFn = (
 export type ResponseValidatorFn<T> = (data: T) => asserts data is T;
 
 export interface Transitionals {
-  silentJSONParsing: boolean;
-  forcedJSONParsing: boolean;
-  errorHandling: "default";
+  silentJSONParsing?: boolean;
+  forcedJSONParsing?: boolean;
+  errorHandling?: "default";
 }
 
 type InternalFetchRequestInitProperties = Pick<

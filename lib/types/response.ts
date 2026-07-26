@@ -22,19 +22,19 @@ export type UnvalidatedResponse<
   D = any,
   P extends object = object,
   T = any,
-> = BaseHtypResponse<D, P> & { error: false; validated: false; data: T | null };
+> = BaseHtypResponse<D, P> & { error: null; validated: false; data: T | null };
 
 export type ValidatedResponse<
   D = any,
   P extends object = object,
   T = any,
-> = BaseHtypResponse<D, P> & { error: false; validated: true; data: T };
+> = BaseHtypResponse<D, P> & { error: null; validated: true; data: T };
 
 export type ErrorResponse<
   D = any,
   P extends object = object,
   E = any,
-> = BaseHtypResponse<D, P> & { error: true; validated: false; data: E };
+> = BaseHtypResponse<D, P> & { error: E; validated: false; data: null };
 
 export type HtypResponse<D = any, P extends object = object, T = any, E = any> =
   | UnvalidatedResponse<D, P, T>

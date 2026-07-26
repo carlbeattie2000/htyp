@@ -462,9 +462,43 @@ describe("requests", () => {
     expect(response.error).toBeTruthy();
 
     if (response.error) {
-      expect(response.data).toEqual({
+      expect(response.error).toEqual({
         error: true,
         message: "Unauthorized",
+      });
+    }
+  });
+
+  it("response should reflect a error was not returned", async () => {
+    interface ErrorResponse {
+      error: boolean;
+      message: string;
+    }
+
+    interface User {
+      id: string;
+      username: string;
+    }
+
+    MockFetch.respondWith({
+      status: 200,
+      body: JSON.stringify({
+        id: 1,
+        username: "foo",
+      }),
+    });
+
+    const response = await htyp.request<User, any, object, ErrorResponse>(
+      "/foo",
+    );
+
+    expect(response.status).toEqual(200);
+    expect(response.error).toBeFalsy();
+
+    if (!response.error) {
+      expect(response.data).toEqual({
+        id: 1,
+        username: "foo",
       });
     }
   });

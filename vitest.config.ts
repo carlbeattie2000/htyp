@@ -3,7 +3,6 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
-    testTimeout: 10000,
     projects: [
       {
         test: {
@@ -19,8 +18,11 @@ export default defineConfig({
           include: ["tests/browser/**/*.browser.test.ts"],
           browser: {
             enabled: true,
-            provider: playwright(),
-            headless: true,
+            provider: playwright({
+              launchOptions: {
+                args: ["--remote-debugging-port=9222"],
+              },
+            }),
             instances: [{ browser: "chromium" }],
           },
           setupFiles: ["tests/setup/browser.setup.ts"],

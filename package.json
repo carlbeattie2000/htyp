@@ -17,8 +17,8 @@
   "scripts": {
     "build": "rm -rf dist && npx tsdown",
     "type": "tsc --noEmit -p tsconfig.build.json",
-    "vitest": "vitest",
-    "vitest-headless": "vitest --browser.headless",
+    "test": "vitest",
+    "test:headless": "vitest --browser.headless",
     "lint": "eslint",
     "lint-fix": "eslint --fix",
     "prettier": "prettier -c ./lib ./tests",

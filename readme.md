@@ -103,7 +103,7 @@ async function findUserWithInstance(username: string) {
 
 ###   Config
 
-```json
+```ts
 {
   baseUrl: '';
   

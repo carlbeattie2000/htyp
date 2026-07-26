@@ -100,6 +100,19 @@ export default class Htyp implements HtypI {
       validated: false,
     };
 
+    const statusValidated = resolvedConfig.validateStatus(response.status);
+
+    if (
+      !statusValidated &&
+      resolvedConfig.transitional.errorHandling === "default"
+    ) {
+      return {
+        ...response,
+        error: true,
+        data: response.data as E,
+      };
+    }
+
     if (resolvedConfig.responseValidator) {
       const clonedData = Utils.object.deepClone(response.data);
       const { responseValidator } = resolvedConfig;

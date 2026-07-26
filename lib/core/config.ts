@@ -42,6 +42,8 @@ export default class HtypConfig<
 
   public responseValidator?: ResponseValidatorFn<unknown> | undefined;
 
+  public validateStatus: (status: number) => boolean;
+
   public credentials?: RequestCredentials | undefined;
 
   public mode?: RequestMode | undefined;
@@ -96,6 +98,8 @@ export default class HtypConfig<
     this.transformResponse = internalConfig.transformResponse;
 
     this.responseValidator = internalConfig.responseValidator;
+
+    this.validateStatus = internalConfig.validateStatus;
 
     this.credentials = internalConfig.credentials;
 
@@ -192,6 +196,7 @@ export default class HtypConfig<
       transformRequest: config.transformRequest,
       transformResponse: config.transformResponse,
       responseValidator: config.responseValidator,
+      validateStatus: config.validateStatus,
     });
   }
 

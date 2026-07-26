@@ -5,6 +5,7 @@ import {
   defaultTransformRequest,
   defaultTransformResponse,
 } from "./transforms";
+import validateStatus from "../helpers/validateStatus";
 
 import type { InternalHtypRequestConfig } from "../types/config";
 
@@ -18,11 +19,13 @@ export function createDefaultInternalConfig(): InternalHtypRequestConfig {
     transformRequest: [defaultTransformRequest],
     transformResponse: [defaultTransformResponse],
     responseValidator: undefined,
+    validateStatus,
     credentials: undefined,
     mode: undefined,
     transitional: {
       silentJSONParsing: false,
       forcedJSONParsing: false,
+      errorHandling: "default",
     },
     headers: new HtypHeaders({
       "content-type": "application/json",

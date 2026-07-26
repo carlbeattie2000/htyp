@@ -439,4 +439,33 @@ describe("requests", () => {
 
     expect(response.status).toEqual(200);
   });
+
+  it("response should reflect a error was returned from the server", async () => {
+    interface ErrorResponse {
+      error: boolean;
+      message: string;
+    }
+
+    MockFetch.respondWith({
+      status: 401,
+      body: JSON.stringify({
+        error: true,
+        message: "Unauthorized",
+      }),
+    });
+
+    const response = await htyp.request<any, any, object, ErrorResponse>(
+      "/foo",
+    );
+
+    expect(response.status).toEqual(401);
+    expect(response.error).toBeTruthy();
+
+    if (response.error) {
+      expect(response.data).toEqual({
+        error: true,
+        message: "Unauthorized",
+      });
+    }
+  });
 });

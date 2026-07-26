@@ -47,6 +47,7 @@ export type ResponseValidatorFn<T> = (data: T) => asserts data is T;
 export interface Transitionals {
   silentJSONParsing: boolean;
   forcedJSONParsing: boolean;
+  errorHandling: "default";
 }
 
 type InternalFetchRequestInitProperties = Pick<
@@ -79,6 +80,8 @@ export type HtypRequestConfig<D = any, P extends object = object> = {
   transformResponse?: TransformResponseFn[];
 
   responseValidator?: ResponseValidatorFn<unknown>;
+
+  validateStatus?: (status: number) => boolean;
 
   transitional?: Transitionals;
 

@@ -507,4 +507,34 @@ describe("requests", () => {
       });
     }
   });
+
+  it("should send URLSearchParams as request body", async () => {
+    await htyp.post("/foo", {
+      data: new URLSearchParams({ foo: "bar" }),
+    });
+
+    expect(capturedFetch.method).toEqual("post");
+    expect(capturedFetch.body).toEqual("foo=bar");
+    expect(capturedFetch.headers?.get("content-type")).toEqual(
+      "application/x-www-form-urlencoded;charset=utf-8",
+    );
+  });
+
+  it("should JSON.stringify form when content-type is application/json", async () => {
+    const formData = new FormData();
+    formData.set("foo", "bar");
+
+    await htyp.post("/foo", {
+      data: formData,
+      headers: {
+        "content-type": "application/json",
+      },
+    });
+
+    expect(capturedFetch.method).toEqual("post");
+    expect(capturedFetch.body).toEqual(JSON.stringify({ foo: "bar" }));
+    expect(capturedFetch.headers?.get("content-type")).toEqual(
+      "application/json",
+    );
+  });
 });

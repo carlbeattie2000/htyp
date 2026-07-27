@@ -10,6 +10,7 @@ enum HtypErrorCodes {
   ERR_HTYP = "ERR_HTYP",
   ERR_STRING_NOT_JSON = "ERR_STRING_NOT_JSON",
   ERR_INSTANCE_MISSING_CLONE = "ERR_INSTANCE_MISSING_CLONE",
+  ERR_INVALID_REQUEST_BODY = "ERR_INVALID_REQUEST_BODY",
 }
 
 interface HtypErrorJson {
@@ -112,4 +113,7 @@ export default class HtypError<
 
   public static readonly ERR_INSTANCE_MISSING_CLONE: HtypErrorCodes =
     HtypErrorCodes.ERR_INSTANCE_MISSING_CLONE;
+
+  public static readonly ERR_INVALID_REQUEST_BODY: HtypErrorCodes =
+    HtypErrorCodes.ERR_INVALID_REQUEST_BODY;
 }

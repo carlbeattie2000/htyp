@@ -1,6 +1,9 @@
+import JSONUtils from "./json";
 import TypeUtils from "./typeOf";
 
 export default class ConvertUtils {
+  public static json = JSONUtils;
+
   public static array(thing: unknown): unknown[] | null {
     if (thing === null || thing === undefined) {
       return null;

@@ -23,7 +23,7 @@
     "lint-fix": "eslint --fix",
     "prettier": "prettier -c ./lib ./tests",
     "prettier-write": "prettier --write ./lib ./tests",
-    "commit-prepare": "pnpm type && pnpm lint && pnpm prettier && pnpm vitest-headless"
+    "commit-prepare": "pnpm type && pnpm lint && pnpm prettier && pnpm test:headless"
   },
   "type": "module",
   "keywords": [],

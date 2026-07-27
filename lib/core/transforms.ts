@@ -17,14 +17,27 @@ export function defaultTransformRequest<T>(
   const hasJsonContentType = contentType.includes("application/json");
   const isObjectPayload = Utils.type.isObject(data);
 
+  if (Utils.type.isFormData(data)) {
+    return hasJsonContentType
+      ? JSON.stringify(Utils.to.json.fromFormData(data))
+      : data;
+  }
+
   if (
     Utils.type.isArrayBuffer(data) ||
     Utils.type.isFile(data) ||
     Utils.type.isBlob(data) ||
-    Utils.type.isReadableStream(data) ||
-    Utils.type.isFormData(data)
+    Utils.type.isReadableStream(data)
   ) {
     return data;
+  }
+
+  if (Utils.type.isURLSearchParams(data)) {
+    headers.setContentType(
+      "application/x-www-form-urlencoded;charset=utf-8",
+      false,
+    );
+    return data.toString();
   }
 
   if (hasJsonContentType || isObjectPayload) {
@@ -36,7 +49,10 @@ export function defaultTransformRequest<T>(
     return data;
   }
 
-  throw new Error("Unable to transform data into valid request body");
+  throw new HtypError(
+    "Invalid request body",
+    HtypError.ERR_INVALID_REQUEST_BODY,
+  );
 }
 
 export function transformRequestData<T>(

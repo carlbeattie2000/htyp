@@ -27,9 +27,7 @@ export function createDefaultInternalConfig(): InternalHtypRequestConfig {
       forcedJSONParsing: false,
       errorHandling: "default",
     },
-    headers: new HtypHeaders({
-      "content-type": "application/json",
-    }),
+    headers: {},
     responseType: "json",
     timeout: 15_000,
     retry: false,

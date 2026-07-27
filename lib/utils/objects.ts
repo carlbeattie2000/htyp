@@ -98,21 +98,6 @@ export default class ObjectUtils {
     });
   }
 
-  public static deepCloneInstance<T extends object>(instance: T): T {
-    const proto = Object.getPrototypeOf(instance);
-    const clone = Object.create(proto);
-
-    for (const [key, value] of Object.entries(instance)) {
-      if (TypeUtils.isObject(value)) {
-        clone[key] = this.deepClone(value);
-      } else {
-        clone[key] = value;
-      }
-    }
-
-    return clone as T;
-  }
-
   private static activeInstancesBeingCloned = new WeakSet<object>();
 
   public static deepClone<T>(thing: T): T {
@@ -123,7 +108,27 @@ export default class ObjectUtils {
     if (thing instanceof Map) {
       const clone = new Map();
       this.forEach(thing, (key, value) => {
-        clone.set(key, value);
+        if (TypeUtils.isObject(value)) {
+          clone.set(key, this.deepClone(value));
+        } else {
+          clone.set(key, value);
+        }
+      });
+      return clone as T;
+    }
+
+    if (thing instanceof Set) {
+      const clone = new Set();
+      thing.forEach((value) => {
+        clone.add(value);
+      });
+      return clone as T;
+    }
+
+    if (thing instanceof URLSearchParams) {
+      const clone = new URLSearchParams();
+      thing.forEach((value, key) => {
+        clone.append(key, value);
       });
       return clone as T;
     }

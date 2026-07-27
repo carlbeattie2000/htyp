@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { clone } from "zod";
 
 import HtypError from "../../../lib/core/HtypError";
 import ObjectUtils from "../../../lib/utils/objects";
@@ -336,5 +337,67 @@ describe("ObjectUtils::deepClone", () => {
     const clonedSinglyLinkedList = ObjectUtils.deepClone(singlyLinkedList);
 
     expect(clonedSinglyLinkedList).toEqual(singlyLinkedList);
+  });
+
+  describe("clones supported classes", () => {
+    it("should clone URLSearchParams", () => {
+      const params = new URLSearchParams({ foo: "bar" });
+      const cloned = ObjectUtils.deepClone(params);
+
+      expect(cloned).toEqual(params);
+      expect(cloned).not.toBe(params);
+    });
+
+    it("should clone Set", () => {
+      const set = new Set([1]);
+      const cloned = ObjectUtils.deepClone(set);
+
+      expect(cloned).toEqual(set);
+      expect(cloned).not.toBe(set);
+    });
+
+    it("should deep clone Set", () => {
+      const set = new Set([{ foo: "bar" }]);
+      const cloned = ObjectUtils.deepClone(set);
+
+      const setValue = set.values().next();
+      const cloneValue = cloned.values().next();
+
+      expect(cloneValue).toBeDefined();
+
+      if (cloneValue) {
+        expect(cloneValue).toEqual(setValue);
+        expect(cloneValue).not.toBe(setValue);
+      }
+    });
+
+    it("should clone Map", () => {
+      const map = new Map([["foo", "bar"]]);
+      const cloned = ObjectUtils.deepClone(map);
+
+      expect(cloned).toEqual(map);
+      expect(cloned).not.toBe(map);
+    });
+
+    it("should deep clone Map", () => {
+      const map = new Map([["foo", { foo: "bar" }]]);
+      const cloned = ObjectUtils.deepClone(map);
+
+      expect(cloned.has("foo")).toBeTruthy();
+
+      if (cloned.has("foo")) {
+        expect(cloned.get("foo")).toEqual(map.get("foo"));
+        expect(cloned.get("foo")).not.toBe(map.get("foo"));
+      }
+    });
+
+    it("should clone FormData", () => {
+      const formData = new FormData();
+      formData.append("foo", "bar");
+      const cloned = ObjectUtils.deepClone(formData);
+
+      expect(cloned).toEqual(formData);
+      expect(cloned).not.toBe(formData);
+    });
   });
 });

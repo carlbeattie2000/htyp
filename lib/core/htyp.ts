@@ -2,21 +2,13 @@ import dispatchRequest from "./dispatchRequest";
 import Interceptor from "./interceptors";
 import { requestShouldRetry } from "./retries";
 import buildRequestConfig from "../helpers/buildRequestConfig";
-import {
-  buildErrorResponse,
-  buildResponse,
-  buildValidatedResponse,
-} from "../helpers/buildResponse";
+import buildResponse from "../helpers/buildResponse";
 import resolveConfig from "../helpers/resolveConfig";
 import Utils from "../utils";
-import { transformResponseData } from "./transforms";
 
 import type HtypConfig from "./config";
 import type { Method } from "../types";
-import type {
-  AcceptedResponseTransformerTypes,
-  HtypRequestConfig,
-} from "../types/config";
+import type { HtypRequestConfig } from "../types/config";
 import type { HtypI } from "../types/Htyp";
 import type {
   RequestInterceptorFns,
@@ -60,7 +52,7 @@ export default class Htyp implements HtypI {
 
     const resolvedConfig = resolveConfig(requestConfig);
 
-    let dispatchedRequestResponse = await dispatchRequest(resolvedConfig);
+    const dispatchedRequestResponse = await dispatchRequest(resolvedConfig);
 
     if (requestShouldRetry(resolvedConfig, dispatchedRequestResponse)) {
       resolvedConfig._retry = true;
@@ -80,55 +72,23 @@ export default class Htyp implements HtypI {
       return this.request(resolvedConfig);
     }
 
+    let response = buildResponse<D, P, T, E>(
+      dispatchedRequestResponse,
+      resolvedConfig,
+      requestConfig,
+    );
+
     for (const interceptor of this.interceptors.response.interceptors) {
-      let interceptorResult = interceptor(dispatchedRequestResponse);
+      let interceptorResult = interceptor(response);
 
       if (Utils.type.isThenable(interceptorResult)) {
         interceptorResult = await interceptorResult;
       }
 
-      dispatchedRequestResponse = interceptorResult;
+      response = interceptorResult as HtypResponse<D, P, T, E>;
     }
 
-    const statusValidated = resolvedConfig.validateStatus(
-      dispatchedRequestResponse.status,
-    );
-
-    const responseDataTransformed = transformResponseData.call<
-      HtypConfig,
-      [AcceptedResponseTransformerTypes],
-      T | null
-    >(resolvedConfig, dispatchedRequestResponse.data);
-
-    if (
-      !statusValidated &&
-      resolvedConfig.transitional.errorHandling === "default"
-    ) {
-      return buildErrorResponse<D, P, T, E>(
-        dispatchedRequestResponse,
-        responseDataTransformed,
-        requestConfig,
-      );
-    }
-
-    if (resolvedConfig.responseValidator && responseDataTransformed !== null) {
-      const clonedData = Utils.object.deepClone(responseDataTransformed);
-      const { responseValidator } = resolvedConfig;
-
-      responseValidator.call(null, clonedData);
-
-      return buildValidatedResponse<D, P, T, E>(
-        dispatchedRequestResponse,
-        responseDataTransformed,
-        requestConfig,
-      );
-    }
-
-    return buildResponse<D, P, T, E>(
-      dispatchedRequestResponse,
-      responseDataTransformed,
-      requestConfig,
-    );
+    return response;
   }
 
   private createMethodRequest(method: Method) {

@@ -286,4 +286,34 @@ describe("interceptors", () => {
 
     expect(sequence).toBe("123");
   });
+
+  it("should add a response interceptor that returns a promise", async () => {
+    const instance = htyp.create();
+
+    instance.interceptors.response.use(async (response) => {
+      if (response.status !== 401 || response.config._retry) {
+        return response;
+      }
+
+      MockFetch.respondWith({
+        status: 200,
+      });
+
+      const refreshResponse = await instance.request("/refresh");
+
+      if (refreshResponse.status === 200) {
+        return instance.request(response.config);
+      }
+
+      return response;
+    });
+
+    MockFetch.respondWith({
+      status: 401,
+    });
+
+    const response = await instance.request("/user");
+
+    expect(response.status).toEqual(200);
+  });
 });

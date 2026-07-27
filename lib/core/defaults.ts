@@ -1,5 +1,4 @@
 import HtypConfig from "./config";
-import HtypHeaders from "./headers";
 import { defaultRetryDelayPolicy, defaultRetryPolicy } from "./retries";
 import {
   defaultTransformRequest,

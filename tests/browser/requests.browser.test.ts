@@ -174,8 +174,13 @@ describe("requests", () => {
     expect(response.headers.getContentType()).toBe("application/json");
   });
 
-  it("should default Content-Type to application/json", async () => {
-    const response = await htyp.request("/foo");
+  it("should default Content-Type to application/json when request body is JSON like", async () => {
+    const response = await htyp.request("/foo", {
+      method: "post",
+      data: {
+        foo: "bar",
+      },
+    });
 
     expect(response.config.headers.getContentType()).toBe("application/json");
   });

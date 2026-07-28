@@ -25,8 +25,18 @@
     "prettier-write": "prettier --write ./lib ./tests",
     "commit-prepare": "pnpm type && pnpm lint && pnpm prettier && pnpm test:headless"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/carlbeattie2000/htyp"
+  },
   "type": "module",
-  "keywords": [],
+  "keywords": [
+    "fetch",
+    "browser",
+    "api",
+    "rest",
+    "client"
+  ],
   "author": "",
   "license": "ISC",
   "devDependencies": {

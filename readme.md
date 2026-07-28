@@ -71,7 +71,7 @@ async function findUser(username: string) {
   );
 
   if (res.error) {
-    console.log(res.data.message);
+    console.log(res.error.message);
   } else {
     console.log(res.data.id, res.data.username, res.data.email);
   }
@@ -94,7 +94,7 @@ async function findUserWithInstance(username: string) {
   );
 
   if (res.error) {
-    console.log(res.data.message);
+    console.log(res.error.message);
   } else {
     console.log(res.data.id, res.data.username, res.data.email);
   }
@@ -154,7 +154,7 @@ async function findUserWithInstance(username: string) {
 
   responseType: 'json';
 
-  timeout: 15000;
+  timeout: 0;
 
   retry: false;
 

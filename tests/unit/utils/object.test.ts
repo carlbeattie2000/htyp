@@ -398,5 +398,13 @@ describe("ObjectUtils::deepClone", () => {
       expect(cloned).toEqual(formData);
       expect(cloned).not.toBe(formData);
     });
+
+    it("should clone date", () => {
+      const date = new Date();
+      const cloned = ObjectUtils.deepClone(date);
+
+      expect(cloned).toEqual(date);
+      expect(cloned).not.toBe(date);
+    });
   });
 });

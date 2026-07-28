@@ -141,6 +141,10 @@ export default class ObjectUtils {
       return clone as T;
     }
 
+    if (thing instanceof Date) {
+      return new Date(thing.getTime()) as T;
+    }
+
     if (Array.isArray(thing)) {
       return thing.map((element): any => {
         if (TypeUtils.isObject(element)) {

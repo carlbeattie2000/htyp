@@ -60,6 +60,8 @@ export default class HtypConfig<
 
   public referrerPolicy?: ReferrerPolicy | undefined;
 
+  public signal?: AbortSignal | null | undefined;
+
   public transitional: Transitionals;
 
   public headers: HtypHeaders;
@@ -116,6 +118,8 @@ export default class HtypConfig<
     this.referrer = internalConfig.referrer;
 
     this.referrerPolicy = internalConfig.referrerPolicy;
+
+    this.signal = internalConfig.signal;
 
     this.transitional = internalConfig.transitional;
 
@@ -182,7 +186,11 @@ export default class HtypConfig<
   }
 
   public clone(): HtypConfig<D, P> {
-    return HtypConfig.clone(this);
+    const clone = HtypConfig.clone(this);
+
+    clone.signal = this.signal;
+
+    return clone;
   }
 
   public static clone<D, P extends object>(

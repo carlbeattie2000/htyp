@@ -7,6 +7,14 @@ import type { InternalHtypResponse } from "../types/response";
 export default async function dispatchRequest<D, P extends object>(
   config: HtypConfig<D, P>,
 ): Promise<InternalHtypResponse> {
+  let abortSignal: AbortSignal | undefined;
+
+  if (config.signal) {
+    abortSignal = config.signal;
+  } else if (config.timeout > 0) {
+    abortSignal = AbortSignal.timeout(config.timeout);
+  }
+
   const response = await fetch(config.url, {
     method: config.method,
     headers: config.headers.toHeaders(),
@@ -19,6 +27,7 @@ export default async function dispatchRequest<D, P extends object>(
     priority: config.priority,
     referrer: config.referrer,
     referrerPolicy: config.referrerPolicy,
+    signal: abortSignal,
   });
 
   let data: AcceptedResponseTransformerTypes = null;

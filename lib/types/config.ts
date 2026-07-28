@@ -60,6 +60,7 @@ type InternalFetchRequestInitProperties = Pick<
   | "priority"
   | "referrer"
   | "referrerPolicy"
+  | "signal"
 >;
 
 export type HtypRequestConfig<D = any, P extends object = object> = {

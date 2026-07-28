@@ -28,7 +28,7 @@ export function createDefaultInternalConfig(): InternalHtypRequestConfig {
     },
     headers: {},
     responseType: "json",
-    timeout: 15_000,
+    timeout: 0,
     retry: false,
     retryPolicy: {
       condition: defaultRetryPolicy,

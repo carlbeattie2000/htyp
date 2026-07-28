@@ -25,6 +25,8 @@ function stringToReadableStream(
 export class MockFetch {
   public static _respondWith: RespondWithInit;
 
+  public static delay: number | null = null;
+
   public static respondWith(init?: RespondWithInit): void {
     if (!init) {
       this._respondWith = {
@@ -34,6 +36,14 @@ export class MockFetch {
     } else {
       this._respondWith = init;
     }
+  }
+
+  public static useDelay(delayMs: number): void {
+    this.delay = delayMs;
+  }
+
+  public static cancelDelay(): void {
+    this.delay = null;
   }
 
   public static fetch(capture: FetchCapture) {
@@ -53,6 +63,30 @@ export class MockFetch {
 
       capture.request = new Request(url, init);
       capture.headers = new Headers(capture.request.headers);
+
+      if (this.delay) {
+        await new Promise<void>((resolve, reject) => {
+          let timeout: ReturnType<typeof setTimeout>;
+
+          const abortHandler = () => {
+            clearTimeout(timeout);
+            reject(
+              new DOMException("The user aborted a request", "AbortError"),
+            );
+          };
+
+          if (init?.signal) {
+            init.signal.addEventListener("abort", abortHandler);
+          }
+
+          timeout = setTimeout(() => {
+            if (init?.signal) {
+              init.signal.removeEventListener("abort", abortHandler);
+            }
+            resolve();
+          }, this.delay ?? 0);
+        });
+      }
 
       return new Response(stream, this._respondWith);
     };

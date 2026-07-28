@@ -5,6 +5,7 @@ import HtypError from "../../lib/core/HtypError";
 import toFormData from "../../lib/helpers/toFormData";
 import htyp from "../../lib/htyp";
 import { MockFetch } from "../mocks/fetch.mock";
+import setupAbortSignalStub from "../mocks/stubs/AbortSignalStub";
 
 import type { FetchCapture } from "../mocks/fetch.mock";
 
@@ -17,10 +18,14 @@ describe("requests", () => {
     orignalFetch = window.fetch;
     window.fetch = MockFetch.fetch(capturedFetch) as typeof fetch;
     MockFetch.respondWith();
+    MockFetch.cancelDelay();
+    vi.useFakeTimers();
   });
 
   afterEach(() => {
     window.fetch = orignalFetch;
+    vi.unstubAllGlobals();
+    vi.useRealTimers();
   });
 
   it("should treat single string arg as url", async () => {
@@ -66,15 +71,15 @@ describe("requests", () => {
   });
 
   it("should retry on network errors when enabled on config", async () => {
-    const htypInstance = htyp.create({
-      retry: true,
-    });
-
     MockFetch.respondWith({
       status: 429,
     });
 
-    const response = await htypInstance.request("/bar");
+    const responsePromise = htyp.request("/bar", { retry: true });
+
+    await vi.advanceTimersByTimeAsync(200);
+
+    const response = await responsePromise;
 
     expect(response.status).toBe(429);
     expect(response.config._retry).toBeTruthy();
@@ -536,5 +541,36 @@ describe("requests", () => {
     expect(capturedFetch.headers?.get("content-type")).toEqual(
       "application/json",
     );
+  });
+
+  it("should abort request", async () => {
+    const abortController = new AbortController();
+    MockFetch.useDelay(10_000);
+
+    setTimeout(() => {
+      abortController.abort();
+    }, 2000);
+
+    const responsePromise = expect(
+      htyp.request("/foo", { signal: abortController.signal }),
+    ).rejects.toThrow();
+
+    await vi.advanceTimersByTimeAsync(2000);
+
+    await responsePromise;
+  });
+
+  it("should timeout after user defined timeout", async () => {
+    setupAbortSignalStub();
+
+    MockFetch.useDelay(5_000);
+
+    const responsePromise = expect(
+      htyp.request("/foo", { timeout: 3000 }),
+    ).rejects.toThrow();
+
+    await vi.advanceTimersByTimeAsync(3_000);
+
+    await responsePromise;
   });
 });
